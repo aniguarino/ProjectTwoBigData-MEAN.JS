@@ -13,24 +13,48 @@ $http.get('http://localhost:8083/getmarkers')
 	console.log('Error: ' + data);
 });
 
-$scope.onMarkerClicked = function(iataMarker){
+$http.get('http://localhost:8083/getallcarrier')
+.success(function(data) {
+	google.maps.event.addDomListener(window, "load", function() {
+		createControls($scope, data);
+	});
+})
+.error(function(data) {
+	console.log('Error: ' + data);
+});
+
+$scope.onMarkerOver = function(iataMarker){
 	removeAllLines($scope);
-	if($scope.lastIataMarkerClicked === iataMarker){
-		setMarkersOpacity($scope, 1);
-		$scope.lastIataMarkerClicked = null;
-	}else{
-		$http.get('http://localhost:8083/getroutesorigin/'+iataMarker)
-		.success(function(data) {		
-			for(var i = 0; i < data.length; i++){
-				drawLine($scope, data[i].OriginIata, data[i].DestIata);
-			}
-			setMarkersOpacity($scope, 0.6);
-			$scope.lastIataMarkerClicked = iataMarker;
-		})
-		.error(function(data) {
-			console.log('Error: ' + data);
-		});
-	}
+	$http.get('http://localhost:8083/getroutesorigin/'+iataMarker)
+	.success(function(data) {		
+		for(var i = 0; i < data.length; i++){
+			drawLine($scope, data[i].OriginIata, data[i].DestIata);
+		}
+		setMarkersOpacity($scope, 0.6);
+		$scope.lastIataMarkerClicked = iataMarker;
+	})
+	.error(function(data) {
+		console.log('Error: ' + data);
+	});
+};
+
+$scope.onMarkerNotOver = function(iataMarker){
+	removeAllLines($scope);
+	setMarkersOpacity($scope, 1);
+};
+
+$scope.onCarrierClick = function(carrierCode){
+	removeAllLines($scope);
+	$http.get('http://localhost:8083/getroutescarrier/'+carrierCode)
+	.success(function(data) {		
+		for(var i = 0; i < data.length; i++){
+			drawLine($scope, data[i].OriginIata, data[i].DestIata);
+		}
+		setMarkersOpacity($scope, 0.4);
+	})
+	.error(function(data) {
+		console.log('Error: ' + data);
+	});
 };
 });
 
@@ -63,19 +87,46 @@ function initMap($scope, data) {
 
 		marker.content = '<div class="infoWindowContent">' + info.Iata + '</div>';
 
-		google.maps.event.addListener(marker, 'click', function(){
-			$scope.onMarkerClicked(info.Iata);
+		google.maps.event.addListener(marker, 'mouseover', function(){
+			$scope.onMarkerOver(info.Iata);
+		});
+		google.maps.event.addListener(marker, 'mouseout', function(){
+			$scope.onMarkerNotOver(info.Iata);
 		});
 
 		$scope.markers[info.Iata] = marker;
 		map.fitBounds(bounds);
 	}  
 
-	google.maps.event.addDomListener(window, "load", function() {
-		for (i = 0; i < data.length; i++){
-			createMarker(data[i]);
-		}
-	});
+	for (i = 0; i < data.length; i++){
+		createMarker(data[i]);
+	}
+}
+
+function createControls($scope, data){
+	var allControl = document.createElement('div');
+	allControl.id = "allcarrier";
+	allControl.title = "Airline Carrier";
+
+	for(var i=0; i<data.length; i++){
+		var controlDiv = document.createElement('div');
+		controlDiv.id = "carrierDiv";
+		controlDiv.title = "Click to select only the "+data[i]+" routes";
+		controlDiv.prop = data[i];
+		allControl.appendChild(controlDiv);
+
+		var controlText = document.createElement('div');
+		controlText.id = "carrierText";
+		controlText.innerHTML = "Air: "+data[i];
+		controlDiv.appendChild(controlText);
+
+		var text = data[i];
+
+		controlDiv.addEventListener('click', function() {
+			$scope.onCarrierClick(this.prop);
+		});
+	}
+	map.controls[google.maps.ControlPosition.TOP_CENTER].push(allControl);
 }
 
 function drawLine($scope, airport1, airport2) {

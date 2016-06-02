@@ -1,37 +1,59 @@
 body {
     font: bold 12px Arial;
-     }
+}
 a {
     text-decoration: none;
-  }
+}
 #map{
     height:600px; 
     width:1100px; 
     box-shadow: 3px 3px 10px gray;
-    }
+}
 #repeat{ 
-     display: inline;
-     }
+ display: inline;
+}
 #country_container { 
-     width: 1000px; 
-     margin: 13px 3px 3px 0px; 
-     text-align: center; 
-     width: 85px; 
-     padding: 4px; 
-     display: inline-table;  
-     color: white; 
-     background-color: black; 
-     font-size: 12px; 
-     cursor: pointer;
-     border: 1px solid black; 
-     border-radius:13px; 
-     }
+ width: 1000px; 
+ margin: 13px 3px 3px 0px; 
+ text-align: center; 
+ width: 85px; 
+ padding: 4px; 
+ display: inline-table;  
+ color: white; 
+ background-color: black; 
+ font-size: 12px; 
+ cursor: pointer;
+ border: 1px solid black; 
+ border-radius:13px; 
+}
 #country_container:hover { 
-     box-shadow: 0px 0px 10px black;
-     background-color: gray; 
-     border: 1px solid gray; 
-     cursor: pointer; 
-     }
+ box-shadow: 0px 0px 10px black;
+ background-color: gray; 
+ border: 1px solid gray; 
+ cursor: pointer; 
+}
 #names { 
-     cursor: pointer; 
-       }
+ cursor: pointer; 
+}
+
+#carrierDiv {
+    background-color: #fff;
+    border: 2px solid #fff;
+    border-radius: 3px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.3);
+    cursor: pointer;
+    float: left;
+    margin-bottom: 22px;
+    text-align: center;
+    margin-left: 12px;
+    margin-top: 8px;
+}
+
+#carrierText {
+    color: rgb(25,25,25);
+    font-family: Roboto,Arial,sans-serif;
+    font-size: 15px;
+    line-height: 25px;
+    padding-left: 5px;
+    padding-right: 5px;
+}

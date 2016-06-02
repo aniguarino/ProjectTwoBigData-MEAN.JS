@@ -80,3 +80,28 @@ app.get('/getroutesorigin/:origin', function(req, res, next) {
         res.json(routes); // return all routes about a specific origin in JSON format
     });
 });
+
+// get all routes about a specific air carrier via Rest API
+app.get('/getroutescarrier/:carrier', function(req, res, next) {
+    var carrier = req.params.carrier;
+    // use mongoose to get all routes about a specific air carrier in the database
+    allRoutes.find({'UniqueCarrier': carrier}, function(err, routes) {
+        // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+        if (err)
+            res.send(err)
+        
+        res.json(routes); // return all routes about a specific air carrier in JSON format
+    });
+});
+
+// get all air carrier via Rest API
+app.get('/getallcarrier', function(req, res, next) {
+    // use mongoose to get all air carrier in the database
+    allRoutes.find().distinct('UniqueCarrier', function(err, routes) {
+        // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+        if (err)
+            res.send(err)
+        
+        res.json(routes); // return all air carrier in JSON format
+    });
+});
