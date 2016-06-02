@@ -1,0 +1,21 @@
+Istruzioni:
+
+Non spostare i file in alcun modo.
+
+Esegui in ordine i seguenti passi:
+- Installa nodeJS (la versione v.4.4.5 LTS)
+- Avvia il localserver di Mongo (credo solo sul MAC)
+Ora installa in cascata le seguenti dipendenze dal terminale:
+
+npm install express
+npm install mongoose (è un'alternativa a MongoJS)
+npm install bodyparser (o body-parser)
+npm install methodoverride (o method-override)
+npm install morgan
+(Non credo altro...AngularJS viene invocato nell'index direttamente)
+
+Da terminale, avvia il file server-side con la seguente direttiva:
+sudo node server-side.js (ogni chiamata GET si vedrà in console)
+
+Ora l’index.html risponderà correttamente..
+
