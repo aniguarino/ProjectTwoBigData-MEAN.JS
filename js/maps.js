@@ -46,9 +46,7 @@ $scope.onMarkerOver = function($scope, iataMarker){
         })
         .error(function(data) {
             console.log('Error: ' + data);
-        });
-    
-        
+        });    
 };
 
 $scope.onMarkerNotOver = function($scope, iataMarker){
