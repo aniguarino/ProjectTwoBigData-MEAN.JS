@@ -105,3 +105,16 @@ app.get('/getallcarrier', function(req, res, next) {
         res.json(routes); // return all air carrier in JSON format
     });
 });
+
+// get all air carrier about routes from one marker via Rest API
+app.get('/getroutesorigindistinct/:origin', function(req, res, next) {
+    var origin = req.params.origin;
+    // use mongoose to get all air carrier about routes from one marker in the database
+    allRoutes.find({'OriginIata': origin}).distinct('UniqueCarrier', function(err, routes) {
+        // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+        if (err)
+            res.send(err)
+        
+        res.json(routes); // return all air carrier about routes from one marker in JSON format
+    });
+});
