@@ -24,14 +24,13 @@ $http.get('http://localhost:8083/getallcarrier')
 
 $scope.onMarkerOver = function($scope, iataMarker){
         removeAllLines($scope);
-        $scope.markers[iataMarker].icon = 'js/icons/airportred.png';
-        //console.log($scope.markers[iataMarker]);
+        $scope.markers[iataMarker].setIcon('js/icons/airportred.png');
         $http.get('http://localhost:8083/getroutesorigin/'+iataMarker)
         .success(function(data) {		
             for(var i = 0; i < data.length; i++){
-                drawLine($scope, data[i].OriginIata, data[i].DestIata);
+                drawLine($scope, data[i].OriginIata, data[i].DestIata, 2);
             }
-            setMarkersOpacity($scope, iataMarker, 0.6);
+            setMarkersOpacity($scope, iataMarker, 0.3);
         })
         .error(function(data) {
             console.log('Error: ' + data);
@@ -40,26 +39,25 @@ $scope.onMarkerOver = function($scope, iataMarker){
         $http.get('http://localhost:8083/getroutesorigindistinct/'+iataMarker)
         .success(function(data) {		
             for(var i = 0; i < data.length; i++){
-                document.getElementById("carrierText"+data[i]).style.color='blue';
-                document.getElementById("carrierText"+data[i]).style.fontWeight = 'bolder';
+                document.getElementById("carrierText"+data[i]).style.color = 'red';
+                document.getElementById("carrierText"+data[i]).style.fontStyle = 'italic';
             }
         })
         .error(function(data) {
             console.log('Error: ' + data);
-        });    
+        });
 };
 
 $scope.onMarkerNotOver = function($scope, iataMarker){
-	removeAllLines($scope);   
-    $scope.markers[iataMarker].icon = 'js/icons/airport.png';  
-    //console.log($scope.markers[iataMarker]);
+	removeAllLines($scope);
+    $scope.markers[iataMarker].setIcon('js/icons/airport.png');
 	setMarkersOpacity($scope, iataMarker, 1);
     
     $http.get('http://localhost:8083/getroutesorigindistinct/'+iataMarker)
         .success(function(data) {		
             for(var i = 0; i < data.length; i++){
-                document.getElementById("carrierText"+data[i]).style.color='black';
-                document.getElementById("carrierText"+data[i]).style.fontWeight = 'normal';
+                document.getElementById("carrierText"+data[i]).style.color = 'black';
+                document.getElementById("carrierText"+data[i]).style.fontStyle = 'normal';
             }
         })
         .error(function(data) {
@@ -72,7 +70,7 @@ $scope.onCarrierClick = function(carrierCode){
 	$http.get('http://localhost:8083/getroutescarrier/'+carrierCode)
 	.success(function(data) {		
 		for(var i = 0; i < data.length; i++){
-			drawLine($scope, data[i].OriginIata, data[i].DestIata);
+			drawLine($scope, data[i].OriginIata, data[i].DestIata, 1);
 		}
 		setMarkersOpacity($scope, 0, 0.4);
 	})
@@ -135,6 +133,7 @@ function createControls($scope, data){
 	for(var i=0; i<data.length; i++){
 		var controlDiv = document.createElement('div');
 		controlDiv.id = "carrierDiv";
+		controlDiv.className = "carrierDiv";
 		controlDiv.title = "Click to select only the "+data[i]+" routes";
 		allControl.appendChild(controlDiv);
 
@@ -142,6 +141,7 @@ function createControls($scope, data){
         controlText.id = "carrierText"+data[i];
 		controlText.innerHTML = "Air: "+data[i];
         controlText.prop = data[i];
+        controlText.className = "carrierText";
         controlText.style.color = "black";
         controlText.textAlign = "center";
 		controlDiv.appendChild(controlText);
@@ -154,7 +154,7 @@ function createControls($scope, data){
                     document.getElementById("carrierText"+data[k]).style.color='black';
                     document.getElementById("carrierText"+data[k]).style.fontWeight = "normal"; 
                  }
-			     this.style.color = "red";
+			     this.style.color = "green";
                  this.style.fontWeight = "bolder";
                  $scope.checkGreen = true;
                  $scope.onCarrierClick(this.prop);
@@ -167,17 +167,16 @@ function createControls($scope, data){
             }
 		});
 	}
-    //console.log($scope.allControl);
 	map.controls[google.maps.ControlPosition.TOP_CENTER].push(allControl);
 }
 
-function drawLine($scope, airport1, airport2) {
+function drawLine($scope, airport1, airport2, stroke) {
 	var flightPath = new google.maps.Polyline({
 		path: [$scope.markers[airport1].position, $scope.markers[airport2].position],
 		geodesic: true,
 		strokeColor: '#FF0000',
 		strokeOpacity: 1.0,
-		strokeWeight: 2
+		strokeWeight: stroke
 	});
 
 	$scope.lines.push(flightPath);
