@@ -3,6 +3,23 @@ var map;
 var sampleApp = angular.module('mapsApp', []);
 sampleApp.controller('controllerMarker', function ($scope, $http) {
 
+// DOM event listener for filtering map
+google.maps.event.addDomListener(document.getElementById('mapFilter'), 'submit', function(e) {
+
+e.preventDefault();
+
+// Get month and year values from input fields
+var month = document.getElementById('month').value;
+var year = document.getElementById('year').value;
+    
+//Validate inputs
+// ... 
+    
+$scope.month = month;
+$scope.year = year;
+    
+});
+
 // when landing on the page, get all markers and show them
 $http.get('http://localhost:8083/getmarkers')
 .success(function(data) {
