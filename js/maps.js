@@ -2,7 +2,6 @@ var map;
 //Angular App Module and Controller
 var sampleApp = angular.module('mapsApp', []);
 sampleApp.controller('controllerMarker', function ($scope, $http) {
-	$scope.formData = {};
 
 // when landing on the page, get all markers and show them
 $http.get('http://localhost:8083/getmarkers')
@@ -24,18 +23,17 @@ $http.get('http://localhost:8083/getallcarrier')
 });
 
 $scope.onMarkerOver = function(iataMarker){
-	removeAllLines($scope);
-	$http.get('http://localhost:8083/getroutesorigin/'+iataMarker)
-	.success(function(data) {		
-		for(var i = 0; i < data.length; i++){
-			drawLine($scope, data[i].OriginIata, data[i].DestIata);
-		}
-		setMarkersOpacity($scope, 0.6);
-		$scope.lastIataMarkerClicked = iataMarker;
-	})
-	.error(function(data) {
-		console.log('Error: ' + data);
-	});
+        removeAllLines($scope);
+        $http.get('http://localhost:8083/getroutesorigin/'+iataMarker)
+        .success(function(data) {		
+            for(var i = 0; i < data.length; i++){
+                drawLine($scope, data[i].OriginIata, data[i].DestIata);
+            }
+            setMarkersOpacity($scope, 0.6);
+        })
+        .error(function(data) {
+            console.log('Error: ' + data);
+        });   
 };
 
 $scope.onMarkerNotOver = function(iataMarker){
@@ -59,6 +57,8 @@ $scope.onCarrierClick = function(carrierCode){
 });
 
 function initMap($scope, data) {
+    $scope.checkGreen = false;
+    
 	var mapOptions = {
 		zoom: 4,
 		center: new google.maps.LatLng(37.4236178,-98.8819956),
@@ -68,10 +68,8 @@ function initMap($scope, data) {
 	$scope.map = map;
 	$scope.markers = [];
 	$scope.lines = [];
-	$scope.lastIataMarkerClicked;
 
 	var bounds = new google.maps.LatLngBounds();
-	var infoWindow = new google.maps.InfoWindow();
 
 	var createMarker = function (info){
 		var marker = new google.maps.Marker({
@@ -85,13 +83,13 @@ function initMap($scope, data) {
 		if(marker.title !== 'Pago Pago, TT' && marker.title !== 'Guam, TT')
 			bounds.extend(marker.position);
 
-		marker.content = '<div class="infoWindowContent">' + info.Iata + '</div>';
-
 		google.maps.event.addListener(marker, 'mouseover', function(){
-			$scope.onMarkerOver(info.Iata);
+            if($scope.checkGreen === false)
+			     $scope.onMarkerOver(info.Iata);
 		});
 		google.maps.event.addListener(marker, 'mouseout', function(){
-			$scope.onMarkerNotOver(info.Iata);
+            if($scope.checkGreen ===  false)
+			     $scope.onMarkerNotOver(info.Iata);
 		});
 
 		$scope.markers[info.Iata] = marker;
@@ -112,18 +110,31 @@ function createControls($scope, data){
 		var controlDiv = document.createElement('div');
 		controlDiv.id = "carrierDiv";
 		controlDiv.title = "Click to select only the "+data[i]+" routes";
-		controlDiv.prop = data[i];
+		//controlDiv.prop = data[i];
 		allControl.appendChild(controlDiv);
 
 		var controlText = document.createElement('div');
-		controlText.id = "carrierText";
+		controlText.id = "carrierText"+i;
 		controlText.innerHTML = "Air: "+data[i];
+        controlText.prop = data[i];
+        controlText.style.color = "red";
 		controlDiv.appendChild(controlText);
 
 		var text = data[i];
-
-		controlDiv.addEventListener('click', function() {
-			$scope.onCarrierClick(this.prop);
+        
+        controlText.addEventListener('click', function() {
+            if(this.style.color === "red"){
+                 for(var k=0; k<data.length; k++) //reset all colors with red
+                    document.getElementById("carrierText"+k).style.color='red';
+			     this.style.color = "green";
+                 $scope.checkGreen = true;
+                 $scope.onCarrierClick(this.prop);
+            }else{
+                this.style.color = "red";
+                $scope.checkGreen = false;
+                removeAllLines($scope);
+                setMarkersOpacity($scope, 1);
+            }
 		});
 	}
 	map.controls[google.maps.ControlPosition.TOP_CENTER].push(allControl);
