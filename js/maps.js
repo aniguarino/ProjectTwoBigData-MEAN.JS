@@ -22,23 +22,51 @@ $http.get('http://localhost:8083/getallcarrier')
 	console.log('Error: ' + data);
 });
 
-$scope.onMarkerOver = function(iataMarker){
+$scope.onMarkerOver = function($scope, iataMarker){
         removeAllLines($scope);
+        $scope.markers[iataMarker].icon = 'js/icons/airportred.png';
+        //console.log($scope.markers[iataMarker]);
         $http.get('http://localhost:8083/getroutesorigin/'+iataMarker)
         .success(function(data) {		
             for(var i = 0; i < data.length; i++){
                 drawLine($scope, data[i].OriginIata, data[i].DestIata);
             }
-            setMarkersOpacity($scope, 0.6);
+            setMarkersOpacity($scope, iataMarker, 0.6);
         })
         .error(function(data) {
             console.log('Error: ' + data);
-        });   
+        });
+    
+        $http.get('http://localhost:8083/getroutesorigindistinct/'+iataMarker)
+        .success(function(data) {		
+            for(var i = 0; i < data.length; i++){
+                document.getElementById("carrierText"+data[i]).style.color='blue';
+                document.getElementById("carrierText"+data[i]).style.fontWeight = 'bolder';
+            }
+        })
+        .error(function(data) {
+            console.log('Error: ' + data);
+        });
+    
+        
 };
 
-$scope.onMarkerNotOver = function(iataMarker){
-	removeAllLines($scope);
-	setMarkersOpacity($scope, 1);
+$scope.onMarkerNotOver = function($scope, iataMarker){
+	removeAllLines($scope);   
+    $scope.markers[iataMarker].icon = 'js/icons/airport.png';  
+    //console.log($scope.markers[iataMarker]);
+	setMarkersOpacity($scope, iataMarker, 1);
+    
+    $http.get('http://localhost:8083/getroutesorigindistinct/'+iataMarker)
+        .success(function(data) {		
+            for(var i = 0; i < data.length; i++){
+                document.getElementById("carrierText"+data[i]).style.color='black';
+                document.getElementById("carrierText"+data[i]).style.fontWeight = 'normal';
+            }
+        })
+        .error(function(data) {
+            console.log('Error: ' + data);
+    });
 };
 
 $scope.onCarrierClick = function(carrierCode){
@@ -48,7 +76,7 @@ $scope.onCarrierClick = function(carrierCode){
 		for(var i = 0; i < data.length; i++){
 			drawLine($scope, data[i].OriginIata, data[i].DestIata);
 		}
-		setMarkersOpacity($scope, 0.4);
+		setMarkersOpacity($scope, 0, 0.4);
 	})
 	.error(function(data) {
 		console.log('Error: ' + data);
@@ -85,11 +113,11 @@ function initMap($scope, data) {
 
 		google.maps.event.addListener(marker, 'mouseover', function(){
             if($scope.checkGreen === false)
-			     $scope.onMarkerOver(info.Iata);
+			     $scope.onMarkerOver($scope, info.Iata);
 		});
 		google.maps.event.addListener(marker, 'mouseout', function(){
             if($scope.checkGreen ===  false)
-			     $scope.onMarkerNotOver(info.Iata);
+			     $scope.onMarkerNotOver($scope, info.Iata);
 		});
 
 		$scope.markers[info.Iata] = marker;
@@ -102,7 +130,7 @@ function initMap($scope, data) {
 }
 
 function createControls($scope, data){
-	var allControl = document.createElement('div');
+	allControl = document.createElement('div');
 	allControl.id = "allcarrier";
 	allControl.title = "Airline Carrier";
 
@@ -110,33 +138,38 @@ function createControls($scope, data){
 		var controlDiv = document.createElement('div');
 		controlDiv.id = "carrierDiv";
 		controlDiv.title = "Click to select only the "+data[i]+" routes";
-		//controlDiv.prop = data[i];
 		allControl.appendChild(controlDiv);
 
 		var controlText = document.createElement('div');
-		controlText.id = "carrierText"+i;
+        controlText.id = "carrierText"+data[i];
 		controlText.innerHTML = "Air: "+data[i];
         controlText.prop = data[i];
-        controlText.style.color = "red";
+        controlText.style.color = "black";
+        controlText.textAlign = "center";
 		controlDiv.appendChild(controlText);
 
 		var text = data[i];
         
         controlText.addEventListener('click', function() {
-            if(this.style.color === "red"){
-                 for(var k=0; k<data.length; k++) //reset all colors with red
-                    document.getElementById("carrierText"+k).style.color='red';
-			     this.style.color = "green";
+            if(this.style.color === "black"){
+                 for(var k=0; k<data.length; k++){//reset all colors and normal font
+                    document.getElementById("carrierText"+data[k]).style.color='black';
+                    document.getElementById("carrierText"+data[k]).style.fontWeight = "normal"; 
+                 }
+			     this.style.color = "red";
+                 this.style.fontWeight = "bolder";
                  $scope.checkGreen = true;
                  $scope.onCarrierClick(this.prop);
             }else{
-                this.style.color = "red";
+                this.style.color = "black";
+                this.style.fontWeight = "normal";
                 $scope.checkGreen = false;
                 removeAllLines($scope);
                 setMarkersOpacity($scope, 1);
             }
 		});
 	}
+    //console.log($scope.allControl);
 	map.controls[google.maps.ControlPosition.TOP_CENTER].push(allControl);
 }
 
@@ -163,8 +196,9 @@ function removeAllLines($scope){
 	}
 }
 
-function setMarkersOpacity($scope, opacity){
+function setMarkersOpacity($scope, iataMarker, opacity){
 	for (var current in $scope.markers) {
-		$scope.markers[current].setOpacity(opacity);
+        if(current != iataMarker)
+		  $scope.markers[current].setOpacity(opacity);
 	}
 }
