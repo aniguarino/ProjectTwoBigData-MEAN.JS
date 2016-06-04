@@ -323,6 +323,27 @@ function getNameCarrier(carrierCode){
 		return "Atlantic Southeast Airlines";
 	if(carrierCode == "VX")
 		return "Virgin America";
+	if(carrierCode == "US")
+		return "US Airways";
+	if(carrierCode == "MQ")
+		return "American Eagle Airlines";
+	if(carrierCode == "FL")
+		return "AirTran Airways Corporation";
+	if(carrierCode == "PA (1)")
+		return "Pan American World Airways";
+	if(carrierCode == "TW")
+		return "Trans World Airways LLC";
+	if(carrierCode == "EA")
+		return "Eastern Air Lines";
+	if(carrierCode == "NW")
+		return "Northwest Airlines";
+	if(carrierCode == "HP")
+		return "America West Airlines";
+	if(carrierCode == "EA")
+		return "Eastern Air Lines";
+	if(carrierCode == "CO")
+		return "Continental Air Lines";
+
 	return carrierCode;
 }
 
