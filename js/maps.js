@@ -22,36 +22,24 @@ $scope.filter = function() {
 		document.getElementById('filterMonthLabel').innerHTML = parseDate($scope.monthFilter);
 	}
 
-	if($scope.carrierClicked != ""){
-		removeAllLines($scope);
-		$http.get('http://localhost:8083/getroutescarrier/'+$scope.carrierClicked+'?month='+month)
-		.success(function(data) {		
-			for(var i = 0; i < data.length; i++){
-				drawLine($scope, data[i].OriginIata, data[i].DestIata, 1);
-			}
-			setMarkersOpacity($scope, 0, 0.4);
-		})
-		.error(function(data) {
-			console.log('Error: ' + data);
-		});
+	if($scope.carrierClicked != null){
+		$scope.onCarrierClick($scope.carrierClicked);
+	}
+
+	if($scope.markerClicked != null){
+		$scope.onMarkerOver($scope, $scope.markerClicked.iata);
 	}
 };
 
 $scope.resetFilter = function() {
 	$scope.monthFilter = "";
 
-	if($scope.carrierClicked != ""){
-		removeAllLines($scope);
-		$http.get('http://localhost:8083/getroutescarrier/'+$scope.carrierClicked)
-		.success(function(data) {		
-			for(var i = 0; i < data.length; i++){
-				drawLine($scope, data[i].OriginIata, data[i].DestIata, 1);
-			}
-			setMarkersOpacity($scope, 0, 0.4);
-		})
-		.error(function(data) {
-			console.log('Error: ' + data);
-		});
+	if($scope.carrierClicked != null){
+		$scope.onCarrierClick($scope.carrierClicked);
+	}
+
+	if($scope.markerClicked != null){
+		$scope.onMarkerOver($scope, $scope.markerClicked.iata);
 	}
 
 	document.getElementById('labelfilter').style.display = "none";
@@ -110,10 +98,9 @@ $scope.onCarrierClick = function(carrierCode){
 });
 
 function initMap($scope, $http, data) {
-	$scope.checkGreen = false;
-	$scope.carrierClicked = "";
+	$scope.carrierClicked = null;
 	$scope.monthFilter = "";
-	$scope.lastMarkerClicked = null;
+	$scope.markerClicked = null;
 
 	var mapOptions = {
 		zoom: 4,
@@ -134,35 +121,38 @@ function initMap($scope, $http, data) {
 			position: new google.maps.LatLng(info.Latitude, info.Longitude),
 			title: info.Iata+" - "+info.LabelCity,
 			icon: 'js/icons/airport.png',
+			iata: info.Iata,
 			opacity: 1
 		});
 
-		if(marker.title !== 'PPG - Pago Pago, TT' && marker.title !== 'GUM - Guam, TT')
+		if(marker.iata !== 'PPG' && marker.iata !== 'GUM' && marker.iata !== 'YAP' && marker.iata !== 'ROR' && marker.iata !== 'SPN')
 			bounds.extend(marker.position);
 
 		google.maps.event.addListener(marker, 'mouseover', function(){
-			if($scope.lastMarkerClicked == null && $scope.checkGreen === false)
+			if($scope.markerClicked == null && $scope.carrierClicked == null)
 				$scope.onMarkerOver($scope, info.Iata);
 		});
 		google.maps.event.addListener(marker, 'mouseout', function(){
-			if($scope.lastMarkerClicked == null && $scope.checkGreen === false)
+			if($scope.markerClicked == null && $scope.carrierClicked == null)
 				$scope.onMarkerNotOver($scope, info.Iata);
 		});
 
 		google.maps.event.addListener(marker, 'click', function(){
-			if($scope.checkGreen === false){
-				if(marker != $scope.lastMarkerClicked && $scope.lastMarkerClicked != null){
-					$scope.lastMarkerClicked.setIcon('js/icons/airport.png');
-					$scope.lastMarkerClicked = marker;
+			console.log(marker.title);
+			if($scope.carrierClicked == null){
+				if(marker != $scope.markerClicked && $scope.markerClicked != null){
+					$scope.markerClicked.setIcon('js/icons/airport.png');
+					$scope.markerClicked = marker;
 					removeAllLines($scope);
 					$scope.onMarkerOver($scope, info.Iata);
 					setAllMarkersOpacity($scope, 1);
+					resetStyleControls($scope);
 				}else{
-					if($scope.lastMarkerClicked === null){
-						$scope.lastMarkerClicked = marker;
+					if($scope.markerClicked === null){
+						$scope.markerClicked = marker;
 					}else{
 						removeAllLines($scope);
-						$scope.lastMarkerClicked = null;
+						$scope.markerClicked = null;
 						setAllMarkersOpacity($scope, 1);
 					}
 				}
@@ -171,7 +161,7 @@ function initMap($scope, $http, data) {
 
 		$scope.markers[info.Iata] = marker;
 		map.fitBounds(bounds);
-	}  
+	}
 
 	for (i = 0; i < data.length; i++){
 		createMarker(data[i]);
@@ -222,7 +212,7 @@ function createControls($scope, data){
 		var text = data[i];
 
 		controlText.addEventListener('click', function() {
-			if($scope.lastMarkerClicked === null){
+			if($scope.markerClicked === null){
 				if(this.style.color === "black"){
 					$scope.carrierClicked = this.prop;
 
@@ -230,13 +220,11 @@ function createControls($scope, data){
 
 					this.style.color = "green";
 					this.style.fontWeight = "bolder";
-					$scope.checkGreen = true;
 					$scope.onCarrierClick(this.prop);
 				}else{
-					$scope.carrierClicked = "";
+					$scope.carrierClicked = null;
 					this.style.color = "black";
 					this.style.fontWeight = "normal";
-					$scope.checkGreen = false;
 					removeAllLines($scope);
 					setMarkersOpacity($scope, 1);
 				}
