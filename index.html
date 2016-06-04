@@ -11,8 +11,22 @@
 </head>
 
 <body>
-	<div ng-controller="controllerMarker">
-		<center><div id='map'></div></center>
+	<div ng-controller="controllerMap">
+		<div id="googleMaps" align="center"></div>
+		<div id="selectMonth" title="Month select" class="dateDiv" style="display: none">
+			<div id="dateText" style="color: black; font-weight: bold" align= "center" class="inputDateSubmit">
+				Mese per filtrare le rotte: 
+				<form id="mapFilter" title="Seleziona il mese" ng-submit="filter()">
+					<input id="monthFilter" type="month" class="inputDateSubmit"/>
+					<input type="submit" id="monthFilterSubmit" class="inputDateSubmit" value="Filtra"/>
+				</form>
+			</div>
+			<div id="dateReset" style="display: none; color: black; font-weight: bold" align= "center" class="inputDateResetSubmit">
+				<form id="mapFilterReset" title="Reset filtro mese" ng-submit="resetFilter()">
+					<input type="submit" id="monthFilterResetSubmit" class="inputDateSubmit" value="Disattiva filtro"/>
+				</form>
+			</div>
+		</div>
 	</div>
 </body>
 </html>
