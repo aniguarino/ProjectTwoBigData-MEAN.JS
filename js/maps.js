@@ -113,6 +113,7 @@ function initMap($scope, $http, data) {
 	$scope.checkGreen = false;
 	$scope.carrierClicked = "";
 	$scope.monthFilter = "";
+	$scope.lastMarkerClicked = null;
 
 	var mapOptions = {
 		zoom: 4,
@@ -140,12 +141,32 @@ function initMap($scope, $http, data) {
 			bounds.extend(marker.position);
 
 		google.maps.event.addListener(marker, 'mouseover', function(){
-			if($scope.checkGreen === false)
+			if($scope.lastMarkerClicked == null && $scope.checkGreen === false)
 				$scope.onMarkerOver($scope, info.Iata);
 		});
 		google.maps.event.addListener(marker, 'mouseout', function(){
-			if($scope.checkGreen ===  false)
+			if($scope.lastMarkerClicked == null && $scope.checkGreen === false)
 				$scope.onMarkerNotOver($scope, info.Iata);
+		});
+
+		google.maps.event.addListener(marker, 'click', function(){
+			if($scope.checkGreen === false){
+				if(marker != $scope.lastMarkerClicked && $scope.lastMarkerClicked != null){
+					$scope.lastMarkerClicked.setIcon('js/icons/airport.png');
+					$scope.lastMarkerClicked = marker;
+					removeAllLines($scope);
+					$scope.onMarkerOver($scope, info.Iata);
+					setAllMarkersOpacity($scope, 1);
+				}else{
+					if($scope.lastMarkerClicked === null){
+						$scope.lastMarkerClicked = marker;
+					}else{
+						removeAllLines($scope);
+						$scope.lastMarkerClicked = null;
+						setAllMarkersOpacity($scope, 1);
+					}
+				}
+			}
 		});
 
 		$scope.markers[info.Iata] = marker;
@@ -201,22 +222,24 @@ function createControls($scope, data){
 		var text = data[i];
 
 		controlText.addEventListener('click', function() {
-			if(this.style.color === "black"){
-				$scope.carrierClicked = this.prop;
+			if($scope.lastMarkerClicked === null){
+				if(this.style.color === "black"){
+					$scope.carrierClicked = this.prop;
 
-				resetStyleControls($scope);
+					resetStyleControls($scope);
 
-				this.style.color = "green";
-				this.style.fontWeight = "bolder";
-				$scope.checkGreen = true;
-				$scope.onCarrierClick(this.prop);
-			}else{
-				$scope.carrierClicked = "";
-				this.style.color = "black";
-				this.style.fontWeight = "normal";
-				$scope.checkGreen = false;
-				removeAllLines($scope);
-				setMarkersOpacity($scope, 1);
+					this.style.color = "green";
+					this.style.fontWeight = "bolder";
+					$scope.checkGreen = true;
+					$scope.onCarrierClick(this.prop);
+				}else{
+					$scope.carrierClicked = "";
+					this.style.color = "black";
+					this.style.fontWeight = "normal";
+					$scope.checkGreen = false;
+					removeAllLines($scope);
+					setMarkersOpacity($scope, 1);
+				}
 			}
 		});
 	}
@@ -288,6 +311,12 @@ function setMarkersOpacity($scope, iataMarker, opacity){
 	for (var current in $scope.markers) {
 		if(current != iataMarker)
 			$scope.markers[current].setOpacity(opacity);
+	}
+}
+
+function setAllMarkersOpacity($scope, opacity){
+	for (var current in $scope.markers) {
+		$scope.markers[current].setOpacity(opacity);
 	}
 }
 
