@@ -71,27 +71,51 @@ app.get('/getroutes', function(req, res, next) {
 // get all routes about a specific origin via Rest API
 app.get('/getroutesorigin/:origin', function(req, res, next) {
     var origin = req.params.origin;
+    var dateFilter = req.query.month;
     // use mongoose to get all routes about a specific origin in the database
-    allRoutes.find({'OriginIata': origin}, function(err, routes) {
+    if(dateFilter == null){
+        allRoutes.find({'OriginIata': origin}, function(err, routes) {
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if (err)
+                res.send(err)
+            
+            res.json(routes); // return all routes about a specific origin in JSON format
+        });
+    }else{
+        dateFilter = dateFilter+"-15";
+        allRoutes.find({$and: [{FlightDateMax: { $gte: dateFilter}}, {FlightDateMin: { $lte: dateFilter}},{OriginIata: origin}]}, function(err, routes) {
         // if there is an error retrieving, send the error. nothing after res.send(err) will execute
         if (err)
             res.send(err)
         
         res.json(routes); // return all routes about a specific origin in JSON format
     });
+    }
 });
 
 // get all routes about a specific air carrier via Rest API
 app.get('/getroutescarrier/:carrier', function(req, res, next) {
     var carrier = req.params.carrier;
+    var dateFilter = req.query.month;
     // use mongoose to get all routes about a specific air carrier in the database
-    allRoutes.find({'UniqueCarrier': carrier}, function(err, routes) {
-        // if there is an error retrieving, send the error. nothing after res.send(err) will execute
-        if (err)
-            res.send(err)
-        
-        res.json(routes); // return all routes about a specific air carrier in JSON format
-    });
+    if(dateFilter == null){
+        allRoutes.find({'UniqueCarrier': carrier}, function(err, routes) {
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if (err)
+                res.send(err)
+            
+            res.json(routes); // return all routes about a specific air carrier in JSON format
+        });
+    }else{
+        dateFilter = dateFilter+"-15";
+        allRoutes.find({$and: [{FlightDateMax: { $gte: dateFilter}}, {FlightDateMin: { $lte: dateFilter}},{'UniqueCarrier': carrier}]}, function(err, routes) {
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if (err)
+                res.send(err)
+            
+            res.json(routes); // return all routes about a specific air carrier in JSON format
+        });
+    }
 });
 
 // get all air carrier via Rest API
@@ -109,12 +133,24 @@ app.get('/getallcarrier', function(req, res, next) {
 // get all air carrier about routes from one marker via Rest API
 app.get('/getroutesorigindistinct/:origin', function(req, res, next) {
     var origin = req.params.origin;
+    var dateFilter = req.query.month;
     // use mongoose to get all air carrier about routes from one marker in the database
-    allRoutes.find({'OriginIata': origin}).distinct('UniqueCarrier', function(err, routes) {
-        // if there is an error retrieving, send the error. nothing after res.send(err) will execute
-        if (err)
-            res.send(err)
-        
-        res.json(routes); // return all air carrier about routes from one marker in JSON format
-    });
+    if(dateFilter == null){
+        allRoutes.find({'OriginIata': origin}).distinct('UniqueCarrier', function(err, routes) {
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if (err)
+                res.send(err)
+            
+            res.json(routes); // return all air carrier about routes from one marker in JSON format
+        });
+    }else{
+        dateFilter = dateFilter+"-15";
+        allRoutes.find({$and: [{FlightDateMax: { $gte: dateFilter}}, {FlightDateMin: { $lte: dateFilter}},{'OriginIata': origin}]}).distinct('UniqueCarrier', function(err, routes) {
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if (err)
+                res.send(err)
+            
+            res.json(routes); // return all air carrier about routes from one marker in JSON format
+        });
+    }
 });

@@ -35,7 +35,7 @@ a {
 #names { 
  cursor: pointer; 
 }
-.carrierDiv {
+.carrierDiv, .dateDiv {
     background-color: #fff;
     border: 2px solid #fff;
     border-radius: 3px;
@@ -47,10 +47,10 @@ a {
     margin-left: 12px;
     margin-top: 8px;
 }
-.carrierText {
+.carrierText, .inputDateSubmit {
     color: rgb(25,25,25);
     font-family: Roboto,Arial,sans-serif;
-    font-size: 15px;
+    font-size: 12px;
     line-height: 25px;
     padding-left: 5px;
     padding-right: 5px;
