@@ -1,10 +1,11 @@
+var expressServer = "http://localhost:8083";
 var map;
 //Angular App Module and Controller
 var sampleApp = angular.module('mapsApp', []);
 sampleApp.controller('controllerMap', function ($scope, $http) {
 
 // when landing on the page, get all markers and show them
-$http.get('http://localhost:8083/getmarkers')
+$http.get(expressServer+'/getmarkers')
 .success(function(data) {
 	initMap($scope, $http, data);
 })
@@ -52,7 +53,7 @@ $scope.onMarkerOver = function($scope, iataMarker){
     $scope.markers[iataMarker].setIcon('js/icons/airportred.png');
     setMarkersOpacity($scope, iataMarker, 0.3);
 
-	$http.get('http://localhost:8083/getroutesorigin/'+iataMarker+'?month='+$scope.monthFilter)
+	$http.get(expressServer+'/getroutesorigindistinct/'+iataMarker+'?month='+$scope.monthFilter)
 	.success(function(data) {		
 		for(var i = 0; i < data.length; i++){
 			drawLine($scope, data[i].OriginIata, data[i].DestIata, 
@@ -63,7 +64,7 @@ $scope.onMarkerOver = function($scope, iataMarker){
 		console.log('Error: ' + data);
 	});
 
-	$http.get('http://localhost:8083/getroutesorigindistinct/'+iataMarker+'?month='+$scope.monthFilter)
+	$http.get(expressServer+'/getcarrierorigin/'+iataMarker+'?month='+$scope.monthFilter)
 	.success(function(data) {		
 		for(var i = 0; i < data.length; i++){
 			document.getElementById("carrierText"+data[i]).style.color = 'red';
@@ -92,14 +93,14 @@ $scope.moveClean = function($scope){
                 removeAllLines($scope);
                 resetStyleControls($scope);
             }
-        }, 500);
+        }, 250);
     }
 };
 
 
 $scope.onCarrierClick = function(carrierCode){
 	removeAllLines($scope);
-	$http.get('http://localhost:8083/getroutescarrier/'+carrierCode+"?month="+$scope.monthFilter)
+	$http.get(expressServer+'/getroutescarrier/'+carrierCode+"?month="+$scope.monthFilter)
 	.success(function(data) {		
 		for(var i = 0; i < data.length; i++){
 			drawLine($scope, data[i].OriginIata, data[i].DestIata, 
@@ -165,19 +166,18 @@ function initMap($scope, $http, data) {
             google.maps.event.addListener(marker, 'click', function(){
                 if($scope.carrierClicked == null){
                     if(marker != $scope.markerClicked && $scope.markerClicked != null){
-                        $scope.markerClicked.setIcon('js/icons/airport.png');
+                    	// Click da marker un marker selezionato ad un altro marker
+                        var lastIataClicked = $scope.markerClicked.iata;
+                        $scope.onMarkerNotOver($scope, lastIataClicked);
                         $scope.markerClicked = marker;
-                        removeAllLines($scope);
                         $scope.onMarkerOver($scope, info.Iata);
-                        setAllMarkersOpacity($scope, 1);
-                        resetStyleControls($scope);
                     }else{
-                        if($scope.markerClicked === null){
+                        if($scope.markerClicked == null){
+                        	// Click di un marker
                             $scope.markerClicked = marker;
                         }else{
-                            removeAllLines($scope);
+                        	// Unclick di un marker
                             $scope.markerClicked = null;
-                            setAllMarkersOpacity($scope, 1);
                             document.getElementById('infoRoute').style.display = "none";
                         }
                     }
@@ -193,7 +193,7 @@ function initMap($scope, $http, data) {
             createMarker(data[i], i*8);
 	});
     
-	$http.get('http://localhost:8083/getallcarrier')
+	$http.get(expressServer+'/getallcarrier')
 	.success(function(data) {
 		createControls($scope, data);
 		createFilterLabel($scope);
