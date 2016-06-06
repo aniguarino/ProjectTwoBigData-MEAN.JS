@@ -88,8 +88,10 @@ $scope.moveClean = function($scope){
 	if($scope.lastMarkerOver != "" && $scope.onMarker === false){
         $scope.lastMarkerOver = "";
         window.setTimeout(function() {
-            removeAllLines($scope);
-            resetStyleControls($scope);
+            if($scope.onMarker === false){
+                removeAllLines($scope);
+                resetStyleControls($scope);
+            }
         }, 500);
     }
 };
@@ -150,8 +152,6 @@ function initMap($scope, $http, data) {
 
             if(marker.iata !== 'PPG' && marker.iata !== 'GUM' && marker.iata !== 'YAP' && marker.iata !== 'ROR' && marker.iata !== 'SPN')
                 bounds.extend(marker.position);
-            else
-                console.log("Escluso dal bound");
 
             google.maps.event.addListener(marker, 'mouseover', function(){
                 if($scope.markerClicked == null && $scope.carrierClicked == null)
