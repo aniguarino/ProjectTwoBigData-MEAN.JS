@@ -11,25 +11,32 @@
 </head>
 
 <body>
-    <div id="bigMap" class="bigMap">
-        <div ng-controller="controllerMap">
+    <div ng-controller="controllerMap">
+        <div id="bigMap" class="bigMap">
             <div id="googleMaps" align="center"></div>
             <div id="selectMonth" title="Month select" class="dateDiv" style="display: none">
-                <div id="dateText" style="color: black; font-weight: bold" align= "center" class="inputDateSubmit">
+                <div id="dateText" style="color: black; font-weight: bold" align= "center" class="button">
                     Mese per filtrare le rotte: 
                     <form id="mapFilter" title="Seleziona il mese" ng-submit="filter()">
-                        <input id="monthFilter" type="month" class="inputDateSubmit"/>
-                        <input type="submit" id="monthFilterSubmit" class="inputDateSubmit" value="Filtra"/>
+                        <input id="monthFilter" type="month" class="button"/>
+                        <input type="submit" id="monthFilterSubmit" class="button" value="Filtra"/>
                     </form>
                 </div>
                 <div id="dateReset" style="display: none; color: black; font-weight: bold" align= "center" class="inputDateResetSubmit">
                     <form id="mapFilterReset" title="Reset filtro mese" ng-submit="resetFilter()">
-                        <input type="submit" id="monthFilterResetSubmit" class="inputDateSubmit" value="Disattiva filtro"/>
+                        <input type="submit" id="monthFilterResetSubmit" class="button" value="Disattiva filtro"/>
                     </form>
                 </div>
             </div>
         </div>
+        <div id="infoRoute" class="text tableInfo" title="Informazioni sulla rotta cliccata" ng-show="showElements.tableDetailsAirport"></div>
+        <div id="infoAirport" class="tableInfo" title="Informazioni sull'aereoporto cliccat" ng-show="showElements.tableDetailsAirport">
+            <div id="iata" class="textLarge" title="Iata aeroporto">{{ airportSelected.iata }}</div>
+            <div id="city" class="textMedium" title="Città aeroporto">{{ airportSelected.city }}</div>
+            <li class="text" ng-repeat="carrier in airportSelected.workingCarrier" ng-bind-html-unsafe="carrier.text" >
+                <div class="text" title="Aeroporto raggiunto">{{ carrier.text }}</div>
+            </li>
+        </div>
     </div>
-    <div id="infoRoute" class="tableInfo" title ="Informazioni sulla rotta cliccata"></div>
 </body>
 </html>

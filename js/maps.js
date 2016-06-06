@@ -2,6 +2,7 @@ var expressServer = "http://localhost:8083";
 var map;
 //Angular App Module and Controller
 var sampleApp = angular.module('mapsApp', []);
+
 sampleApp.controller('controllerMap', function ($scope, $http) {
 
 // when landing on the page, get all markers and show them
@@ -12,6 +13,30 @@ $http.get(expressServer+'/getmarkers')
 .error(function(data) {
 	console.log('Error: ' + data);
 });
+
+$scope.showElements = {
+	tableDetailsAirport: false
+}
+
+$scope.airportSelected = {
+	iata: "",
+	city: "",
+	meanDelayDep: "",
+	meanDelayArr: "",
+	workingCarrier: [],
+	airportReached: []
+}
+
+$scope.routeSelected = {
+	originIata: "",
+	originCity: "",
+	destIata: "",
+	destCity: "",
+	airTime: "",
+	distanceKm: "",
+	meanDelayArr: "",
+	workingCarrier: []
+}
 
 $scope.filter = function() {
 	var month = document.getElementById('monthFilter').value;
@@ -54,10 +79,15 @@ $scope.onMarkerOver = function($scope, iataMarker){
     setMarkersOpacity($scope, iataMarker, 0.3);
 
 	$http.get(expressServer+'/getroutesorigindistinct/'+iataMarker+'?month='+$scope.monthFilter)
-	.success(function(data) {		
+	.success(function(data) {
+		$scope.airportSelected.iata = data[0].OriginIata;
+		$scope.airportSelected.city = data[0].OriginCity;
+
+		$scope.airportSelected.airportReached = [];
 		for(var i = 0; i < data.length; i++){
-			drawLine($scope, data[i].OriginIata, data[i].DestIata, 
-                     data[i].OriginCity, data[i].DestCity, data[i].AirTime, data[i].DistanceKm, 2);
+			drawLine($scope, data[i].OriginIata, data[i].DestIata, 2);
+			// Possibilità di aggiungere il nome della città raggiunta oltre lo iata
+			$scope.airportSelected.airportReached.push({iata: data[i].DestIata, city: "CITTA'"});
         }
 	})
 	.error(function(data) {
@@ -66,9 +96,11 @@ $scope.onMarkerOver = function($scope, iataMarker){
 
 	$http.get(expressServer+'/getcarrierorigin/'+iataMarker+'?month='+$scope.monthFilter)
 	.success(function(data) {		
+		$scope.airportSelected.workingCarrier = [];
 		for(var i = 0; i < data.length; i++){
 			document.getElementById("carrierText"+data[i]).style.color = 'red';
 			document.getElementById("carrierText"+data[i]).style.fontWeight = 'bold';
+			$scope.airportSelected.workingCarrier.push(getNameCarrier(data[i]));
 		}
 	})
 	.error(function(data) {
@@ -83,6 +115,7 @@ $scope.onMarkerNotOver = function($scope, iataMarker){
 
 	resetStyleControls($scope);
     $scope.onMarker = false;
+    $scope.airportSelected = {};
 };
     
 $scope.moveClean = function($scope){
@@ -97,17 +130,14 @@ $scope.moveClean = function($scope){
     }
 };
 
-
 $scope.onCarrierClick = function(carrierCode){
 	removeAllLines($scope);
 	$http.get(expressServer+'/getroutescarrier/'+carrierCode+"?month="+$scope.monthFilter)
 	.success(function(data) {		
 		for(var i = 0; i < data.length; i++){
-			drawLine($scope, data[i].OriginIata, data[i].DestIata, 
-                     data[i].OriginCity, data[i].DestCity, data[i].AirTime, data[i].DistanceKm, 1);
+			drawLine($scope, data[i].OriginIata, data[i].DestIata, 1);
 		}
 		setMarkersOpacity($scope, 0, 0.4);
-
 	})
 	.error(function(data) {
 		console.log('Error: ' + data);
@@ -130,7 +160,7 @@ function initMap($scope, $http, data) {
 	map = new google.maps.Map(document.getElementById("googleMaps"), mapOptions);
     
     google.maps.event.addListener(map, 'mousemove', function(){
-			$scope.moveClean($scope);
+		$scope.moveClean($scope);
     });
 
 	$scope.map = map;
@@ -175,10 +205,14 @@ function initMap($scope, $http, data) {
                         if($scope.markerClicked == null){
                         	// Click di un marker
                             $scope.markerClicked = marker;
+                            //$scope.showElements.tableDetailsAirport = false;
+                            document.getElementById('infoAirport').style.display = "inline";
+                            console.log($scope.airportSelected);
                         }else{
                         	// Unclick di un marker
                             $scope.markerClicked = null;
-                            document.getElementById('infoRoute').style.display = "none";
+                            //$scope.showElements.tableDetailsAirport = false;
+                            document.getElementById('infoAirport').style.display = "none";
                         }
                     }
                 }
@@ -239,7 +273,7 @@ function createControls($scope, data){
 
 		controlText.addEventListener('click', function() {
 			if($scope.markerClicked === null){
-                document.getElementById('infoRoute').style.display = "none";
+                $scope.showElements.tableDetailsAirport = false;
 				if(this.style.color === "black"){
 					$scope.carrierClicked = this.prop;
 
@@ -299,7 +333,7 @@ function createInputDate($scope, data){
 	map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(dateDiv);
 }
 
-function drawLine($scope, airport1, airport2, origincity, destcity, airtime, distancekm, stroke) {
+function drawLine($scope, airport1, airport2, stroke) {
 	var flightPath = new google.maps.Polyline({
 		path: [$scope.markers[airport1].position, $scope.markers[airport2].position],
 		geodesic: true,
@@ -307,16 +341,15 @@ function drawLine($scope, airport1, airport2, origincity, destcity, airtime, dis
 		strokeOpacity: 1.0,
 		strokeWeight: stroke
 	});
-    
-    google.maps.event.addListener(flightPath, 'click', function(){
-        document.getElementById('infoRoute').style.display = "inline";
-        document.getElementById('infoRoute').innerHTML = "Partenza: "+ origincity + " - Destinazione: " + destcity +
-        " - Tempo medio di volo: " + airtime  + " - Distanza in Km: " + distancekm;
-    });
-    
-	$scope.lines.push(flightPath);
 
+	google.maps.event.addListener(flightPath, 'click', function(){
+        document.getElementById('infoRoute').style.display = "inline";
+    });
+
+	$scope.lines.push(flightPath);
 	flightPath.setMap($scope.map);
+
+	return flightPath;
 }
 
 function removeAllLines($scope){
