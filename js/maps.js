@@ -142,6 +142,22 @@ $scope.onCarrierClick = function(carrierCode){
 	.error(function(data) {
 		console.log('Error: ' + data);
 	});
+    
+    if($scope.monthFilter != null || $scope.monthFilter != ""){
+        $http.get(expressServer+'/getcarrierinfo/'+carrierCode+"?month="+$scope.monthFilter)
+        .success(function(data) {
+            document.getElementById("infoCarrier").style.display = "inline";
+            document.getElementById("infoCarrier").innerHTML = "("+getNameCarrier(carrierCode)+", "+parseDate($scope.monthFilter)+")";
+            for(var i = 0; i < data.length; i++){
+                console.log("Entro nel for");
+                document.getElementById("infoCarrier").innerHTML = document.getElementById("infoCarrier").innerHTML+
+                " ["+parseDay(data[i].DayOfWeek)+" del mese] - Ritardo medio: "+data[i].MeanDelay+" - Deviazione Standard: "+data[i].StandardDeviation;
+            }
+            })
+        .error(function(data) {
+            console.log('Error: ' + data);
+        });
+    }
 };
 });
 
@@ -288,6 +304,7 @@ function createControls($scope, data){
 					this.style.fontWeight = "normal";
 					removeAllLines($scope);
 					setMarkersOpacity($scope, 1);
+                    document.getElementById("infoCarrier").style.display = "none";
 				}
 			}
 		});
@@ -460,4 +477,23 @@ function parseDate(date){
 		month = 'Dicembre';
 
 	return month+" "+year;
+}
+
+function parseDay(day){
+    if(day == '1')
+		day = 'Lunedi';
+	if(day == '2')
+		day = 'Martedi';
+	if(day == '3')
+		day = 'Mercoledi';
+    if(day == '4')
+		day = 'Giovedi';
+    if(day == '5')
+		day = 'Venerdi';
+    if(day == '6')
+		day = 'Sabato';
+    if(day == '7')
+		day = 'Domenica';
+    
+    return day;
 }

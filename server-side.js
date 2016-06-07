@@ -3,7 +3,7 @@
 // set up ========================
 var express  = require('express');
 var app      = express();                               // create our app w/ express
-var mongoose = require('mongoose');                     // mongoose for mongodb
+var mongoose = require('mongoose'), Schema = mongoose.Schema;                     // mongoose for mongodb
 var morgan = require('morgan');             // log requests to the console (express4)
 var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
 var methodOverride = require('method-override'); // simulate DELETE and PUT (express4)
@@ -36,7 +36,7 @@ var allCompanies = mongoose.model('aircompanies', {
     text : String
 });
 
-var statsCarrier = mongoose.model('statscarrier', {
+var statsCarrier = mongoose.model('stats', {
     text : String
 });
 
@@ -211,7 +211,11 @@ app.get('/getcarrierinfo/:carrier', function(req, res, next) {
     var carrier = req.params.carrier;
     var dateFilter = req.query.month;
     // use mongoose to get info about a specific air carrier in specific year and month in the database
-        var year = dateFilter.substring(0, 4);
+    if(dateFilter == null || dateFilter == ""){
+        //caso in cui non ho nessun filtro, va richiamata una nuova collezione da fare per un grafico più generico
+        console.log("nessun filtro impostato!");
+    }else{
+        var year = dateFilter.substring(0, 4).toString();
         var mon = dateFilter.slice(-1).toString();
         //console.log(year);
         //console.log(mon);
@@ -222,4 +226,5 @@ app.get('/getcarrierinfo/:carrier', function(req, res, next) {
             
             res.json(infocarrier); // return JSON format
         });
-    });
+    }
+});
