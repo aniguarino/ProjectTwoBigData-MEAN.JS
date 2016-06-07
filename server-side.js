@@ -36,6 +36,10 @@ var allCompanies = mongoose.model('aircompanies', {
     text : String
 });
 
+var statsCarrier = mongoose.model('statscarrier', {
+    text : String
+});
+
 // listen server ======================================
 var port = 8083; //Server port
 app.listen(port); 
@@ -45,6 +49,7 @@ module.exports = allMarkers;
 module.exports = allRoutes;
 module.exports = allRoutesDistinct;
 module.exports = allCompanies;
+module.exports = statsCarrier;
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -200,3 +205,21 @@ app.get('/getcarrierorigin/:origin', function(req, res, next) {
         });
     }
 });
+
+// get other info about a specific air carrier in specific year and month via Rest API
+app.get('/getcarrierinfo/:carrier', function(req, res, next) {
+    var carrier = req.params.carrier;
+    var dateFilter = req.query.month;
+    // use mongoose to get info about a specific air carrier in specific year and month in the database
+        var year = dateFilter.substring(0, 4);
+        var mon = dateFilter.slice(-1).toString();
+        //console.log(year);
+        //console.log(mon);
+        statsCarrier.find({'UniqueCarrier': carrier, 'Year': year, 'Month': mon}, function(err, infocarrier) {
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if (err)
+                res.send(err)
+            
+            res.json(infocarrier); // return JSON format
+        });
+    });
