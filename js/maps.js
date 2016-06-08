@@ -576,7 +576,7 @@ function createGraphWeekCarrier($scope, carrierCode, data){
 			theme: "theme3",
             animationEnabled: true,
 			title:{
-				text: "Distribuzione ritardi di " + parseDate($scope.monthFilter) + " per " + getNameCarrier(carrierCode),
+				text: "Variazione ritardi di " + parseDate($scope.monthFilter) + " per " + getNameCarrier(carrierCode),
 				fontSize: 30
 			},
 			toolTip: {
