@@ -1,13 +1,13 @@
-a {
-    text-decoration: none;
+body{
+	margin: 40px;
 }
 #googleMaps{
     height: 100%;
     position: absolute;
     margin-left: auto;
     margin-right: auto;
-    left: 10%;
-    right: 10%;
+    left: 1%;
+    right: 1%;
     box-shadow: 3px 3px 10px gray;
 }
 #repeat{ 
@@ -171,8 +171,19 @@ a {
 }
 .graph {
     position: relative;
-    width: 50%;
-    left: 10%;
-    right: 10%;
     padding-bottom: 8%;
+}
+.graphMeans {
+	float: left;
+    width: 25%;
+    padding-bottom: 8%;
+    padding-left: 2%;
+    padding-right: 2%;
+}
+.graphCount {
+    float: right;
+    width: 65%;
+    padding-bottom: 8%;
+    padding-left: 2%;
+    padding-right: 2%;
 }
