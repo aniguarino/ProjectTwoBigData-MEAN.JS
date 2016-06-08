@@ -70,6 +70,7 @@ $scope.resetFilter = function() {
 
 	document.getElementById('labelfilter').style.display = "none";
 	document.getElementById('dateReset').style.display = "none";
+    document.getElementById("infoCarrier").style.display = "none";
 };
 
 $scope.onMarkerOver = function($scope, iataMarker){
