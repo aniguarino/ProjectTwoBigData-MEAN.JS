@@ -169,3 +169,10 @@ a {
     left: 10%;
     right: 10%;
 }
+.graph {
+    position: relative;
+    width: 50%;
+    left: 10%;
+    right: 10%;
+    padding-bottom: 8%;
+}

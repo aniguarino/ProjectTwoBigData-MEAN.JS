@@ -215,11 +215,16 @@ app.get('/getcarrierinfo/:carrier', function(req, res, next) {
         //caso in cui non ho nessun filtro, va richiamata una nuova collezione da fare per un grafico più generico
         console.log("nessun filtro impostato!");
     }else{
-        var year = dateFilter.substring(0, 4).toString();
-        var mon = dateFilter.slice(-1).toString();
+        var year = dateFilter.substring(0, 4);
+        var month;
+        if(dateFilter.slice(-2).charAt(0) === '0')
+            month = dateFilter.slice(-1);
+        else
+            month = dateFilter.slice(-2);
+        
         //console.log(year);
         //console.log(mon);
-        statsCarrier.find({'UniqueCarrier': carrier, 'Year': year, 'Month': mon}, function(err, infocarrier) {
+        statsCarrier.find({'UniqueCarrier': carrier, 'Year': year, 'Month': month}).sort({'DayOfWeek': 1}).exec( function(err, infocarrier) {
             // if there is an error retrieving, send the error. nothing after res.send(err) will execute
             if (err)
                 res.send(err)

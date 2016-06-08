@@ -8,6 +8,7 @@
 	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
 	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAoX6LaclBapeTtEpltmUNXSNhhMqCmZeI"></script>
 	<script type="text/javascript" src="js/maps.js"></script>
+    <script type="text/javascript" src="js/canvasjs.min.js"></script>
 </head>
 
 <body>
@@ -37,7 +38,10 @@
                 <div class="text" title="Aeroporto raggiunto">{{ carrier.text }}</div>
             </li>
         </div>
-        <div id="infoCarrier" class="infoCarrier" title="Grafico informativo"></div>
+        <div id="infoCarrier">
+            <div id="graphMeans" class="graph" title="Grafico informativo" style="height:300px;"></div>
+            <div id="graphCount" class="graph" title="Grafico informativo" style="height:300px;"></div>
+        </div>
     </div>
 </body>
 </html>

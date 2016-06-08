@@ -147,12 +147,8 @@ $scope.onCarrierClick = function(carrierCode){
         $http.get(expressServer+'/getcarrierinfo/'+carrierCode+"?month="+$scope.monthFilter)
         .success(function(data) {
             document.getElementById("infoCarrier").style.display = "inline";
-            document.getElementById("infoCarrier").innerHTML = "("+getNameCarrier(carrierCode)+", "+parseDate($scope.monthFilter)+")";
-            for(var i = 0; i < data.length; i++){
-                console.log("Entro nel for");
-                document.getElementById("infoCarrier").innerHTML = document.getElementById("infoCarrier").innerHTML+
-                " ["+parseDay(data[i].DayOfWeek)+" del mese] - Ritardo medio: "+data[i].MeanDelay+" - Deviazione Standard: "+data[i].StandardDeviation;
-            }
+            createGraphWeekCarrier($scope, carrierCode, data);
+            //add more graphs here
             })
         .error(function(data) {
             console.log('Error: ' + data);
@@ -496,4 +492,156 @@ function parseDay(day){
 		day = 'Domenica';
     
     return day;
+}
+
+function parseMinutes(time){
+    var hours = time.substring(0,2);
+    var minutes = time.substring(3,5);
+    
+    return parseInt(hours*60)+parseInt(minutes);
+}
+
+function createGraphWeekCarrier($scope, carrierCode, data){
+
+    var meansPoints = [];
+    var deviationPoints = [];
+    var countPoints0 = [];
+    var countPoints15 = [];
+    var countPoints60 = [];
+    var countPoints3h = [];
+    var countPoints24h = [];
+    var countPointsOther = [];
+    
+    for(var i = 0; i < data.length; i++){
+        var minutesMeans = parseMinutes(data[i].MeanDelay);
+        var minutesDeviation = parseMinutes(data[i].StandardDeviation);
+        var day = parseDay(data[i].DayOfWeek);
+        meansPoints.push({y: minutesMeans, label: day});
+        deviationPoints.push({y: minutesDeviation, label: day});
+        
+        countPoints0.push({y: data[i].CountDelay0, label: day});
+        countPoints15.push({y: data[i].CountDelay15, label: day});
+        countPoints60.push({y: data[i].CountDelay60, label: day});
+        countPoints3h.push({y: data[i].CountDelay3h, label: day});
+        countPoints24h.push({y: data[i].CountDelay24h, label: day});
+        countPointsOther.push({y: data[i].CountDelayOther, label: day});
+    }
+    
+    var chartGraphMeans = new CanvasJS.Chart("graphMeans",
+    {
+      title:{
+      text: "Distribuzione ritardi di " + parseDate($scope.monthFilter) + " per " + getNameCarrier(carrierCode)   
+      },
+      axisY:{
+        title:"Ritardo in minuti"   
+      },
+      animationEnabled: true,
+      data: [
+      {        
+        type: "stackedColumn",
+        toolTipContent: "{label}<br/><span style='\"'color: {color};'\"'><strong>{name}</strong></span>: {y} minuti",
+        name: "Media",
+        showInLegend: "true",
+        dataPoints: meansPoints,
+        color: "darkred"
+      },  {        
+        type: "stackedColumn",
+        toolTipContent: "{label}<br/><span style='\"'color: {color};'\"'><strong>{name}</strong></span>: {y} minuti",
+        name: "Deviazione standard",
+        showInLegend: "true",
+        dataPoints: deviationPoints,
+        color: "lightblue"
+      }            
+      ]
+      ,
+      legend:{
+        cursor:"pointer",
+        itemclick: function(e) {
+          if (typeof (e.dataSeries.visible) ===  "undefined" || e.dataSeries.visible) {
+	          e.dataSeries.visible = false;
+          }
+          else
+          {
+            e.dataSeries.visible = true;
+          }
+          chartGraphMeans.render();
+        }
+      }
+    });
+    
+    chartGraphMeans.render();
+    
+    var chartGraphCount = new CanvasJS.Chart("graphCount",
+		{
+			theme: "theme3",
+            animationEnabled: true,
+			title:{
+				text: "Distribuzione ritardi di " + parseDate($scope.monthFilter) + " per " + getNameCarrier(carrierCode),
+				fontSize: 30
+			},
+			toolTip: {
+				shared: true
+			},			
+			axisY: {
+				title: "Numero di voli"
+			},		
+			data: [ 
+			{
+				type: "column",	
+				name: "In orario",
+				legendText: "In orario",
+				showInLegend: true, 
+				dataPoints: countPoints0
+			},
+			{
+				type: "column",	
+				name: "Ritardo entro 15 minuti",
+				legendText: "Ritardo entro 15 minuti",
+				showInLegend: true, 
+				dataPoints: countPoints15
+			},
+            {
+				type: "column",	
+				name: "Ritardo entro 1 ora",
+				legendText: "Ritardo entro 1 ora",
+				showInLegend: true, 
+				dataPoints: countPoints60
+			},
+            {
+				type: "column",	
+				name: "Ritardo entro 3 ore",
+				legendText: "Ritardo entro 3 ore",
+				showInLegend: true, 
+				dataPoints: countPoints3h
+			},
+            {
+				type: "column",	
+				name: "Ritardo entro 24 ore",
+				legendText: "Ritardo entro 24 ore",
+				showInLegend: true, 
+				dataPoints: countPoints24h
+			},
+            {
+				type: "column",	
+				name: "Ritardo oltre un giorno",
+				legendText: "Ritardo oltre un giorno",
+				showInLegend: true, 
+				dataPoints: countPointsOther
+			}
+			],
+          legend:{
+            cursor:"pointer",
+            itemclick: function(e){
+              if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+              	e.dataSeries.visible = false;
+              }
+              else {
+                e.dataSeries.visible = true;
+              }
+            	chartGraphCount.render();
+            }
+          },
+        });
+
+    chartGraphCount.render();
 }
