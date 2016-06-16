@@ -16,7 +16,7 @@
         <div id="bigMap" class="bigMap">
             <div id="googleMaps" align="center"></div>
             <div id="selectMonth" title="Month select" class="dateDiv" style="display: none">
-                <div id="dateText" style="color: black; font-weight: bold" align= "center" class="button">
+                <div id="dateText" style="display: none; color: black; font-weight: bold" align= "center" class="button">
                     Mese per filtrare le rotte: 
                     <form id="mapFilter" title="Seleziona il mese" ng-submit="filter()">
                         <input id="monthFilter" type="month" class="button"/>
@@ -31,12 +31,14 @@
             </div>
         </div>
         <div id="infoRoute" class="text tableInfo" title="Informazioni sulla rotta cliccata" ng-show="showElements.tableDetailsAirport"></div>
-        <div id="infoAirport" class="tableInfo" title="Informazioni sull'aereoporto cliccat" ng-show="showElements.tableDetailsAirport">
+        <div id="infoAirport" class="tableInfo" title="Informazioni sull'aereoporto cliccato" ng-show="showElements.tableDetailsAirport">
             <div id="iata" class="textLarge" title="Iata aeroporto">{{ airportSelected.iata }}</div>
             <div id="city" class="textMedium" title="Città aeroporto">{{ airportSelected.city }}</div>
-            <li class="text" ng-repeat="carrier in airportSelected.workingCarrier" ng-bind-html-unsafe="carrier.text" >
-                <div class="text" title="Aeroporto raggiunto">{{ carrier.text }}</div>
-            </li>
+            <ul>
+                <li class="text" ng-repeat="airport in airportSelected.airportReached">
+                    <div class="text" title="Aeroporto raggiunto">{{ airport }}</div>
+                </li>
+            </ul>
         </div>
         <div id="infoCarrier">
             <div id="graphMeans" class="graph graphMeans" title="Grafico informativo" style="height:300px;"></div>

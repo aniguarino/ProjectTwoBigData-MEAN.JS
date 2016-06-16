@@ -158,14 +158,26 @@ app.get('/getroutescarrier/:carrier', function(req, res, next) {
 
 // get all air carrier via Rest API
 app.get('/getallcarrier', function(req, res, next) {
-    // use mongoose to get all air carrier in the database
-    allRoutes.find().distinct('UniqueCarrier', function(err, carriers) {
-        // if there is an error retrieving, send the error. nothing after res.send(err) will execute
-        if (err)
-            res.send(err)
-        
-        res.json(carriers); // return all air carrier in JSON format
-    });
+    var dateFilter = req.query.month;
+    if(dateFilter == null || dateFilter == ""){
+        // use mongoose to get all air carrier in the database
+        allRoutes.find().distinct('UniqueCarrier', function(err, carriers) {
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if (err)
+                res.send(err)
+
+            res.json(carriers); // return all air carrier in JSON format
+        });
+    }else{
+        dateFilter = dateFilter+"-15";
+        allRoutes.find({$and: [{FlightDateMax: { $gte: dateFilter}}, {FlightDateMin: { $lte: dateFilter}}]}).distinct('UniqueCarrier', function(err, carriers) {
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if (err)
+                res.send(err)
+            
+            res.json(carriers); // return all air carrier about routes from one marker in JSON format
+        });
+    }
 });
 
 // get name about an air company via Rest API

@@ -23,7 +23,6 @@ $scope.airportSelected = {
 	city: "",
 	meanDelayDep: "",
 	meanDelayArr: "",
-	workingCarrier: [],
 	airportReached: []
 }
 
@@ -46,26 +45,35 @@ $scope.filter = function() {
 		document.getElementById('labelfilter').style.display = "inline";
 		document.getElementById('dateReset').style.display = "inline";
 		document.getElementById('filterMonthLabel').innerHTML = parseDate($scope.monthFilter);
+        document.getElementById('allcarrier').remove();
+        allCarriers($scope, $http); //this time, filtered by month
 	}
 
 	if($scope.carrierClicked != null){
 		$scope.onCarrierClick($scope.carrierClicked);
 	}
-
+    
 	if($scope.markerClicked != null){
+        $scope.onMarkerNotOver($scope, $scope.markerClicked.iata);
 		$scope.onMarkerOver($scope, $scope.markerClicked.iata);
 	}
+    
 };
 
 $scope.resetFilter = function() {
 	$scope.monthFilter = "";
-
+    
+    document.getElementById('allcarrier').remove();
+    allCarriers($scope, $http); //reset allCarrier without filtering
+    
 	if($scope.carrierClicked != null){
 		$scope.onCarrierClick($scope.carrierClicked);
 	}
 
 	if($scope.markerClicked != null){
-		$scope.onMarkerOver($scope, $scope.markerClicked.iata);
+        window.setTimeout(function() {
+		  $scope.onMarkerOver($scope, $scope.markerClicked.iata);
+        }, 50); 
 	}
 
 	document.getElementById('labelfilter').style.display = "none";
@@ -81,14 +89,16 @@ $scope.onMarkerOver = function($scope, iataMarker){
 
 	$http.get(expressServer+'/getroutesorigindistinct/'+iataMarker+'?month='+$scope.monthFilter)
 	.success(function(data) {
-		$scope.airportSelected.iata = data[0].OriginIata;
-		$scope.airportSelected.city = data[0].OriginCity;
+        if(data.length != 0){
+            $scope.airportSelected.iata = data[0].OriginIata;
+            $scope.airportSelected.city = data[0].OriginCity;
 
-		$scope.airportSelected.airportReached = [];
-		for(var i = 0; i < data.length; i++){
-			drawLine($scope, data[i].OriginIata, data[i].DestIata, 2);
-			// Possibilità di aggiungere il nome della città raggiunta oltre lo iata
-			$scope.airportSelected.airportReached.push({iata: data[i].DestIata, city: "CITTA'"});
+            $scope.airportSelected.airportReached = [];
+            for(var i = 0; i < data.length; i++){
+                drawLine($scope, data[i].OriginIata, data[i].DestIata, 2);
+                // Possibilità di aggiungere il nome della città raggiunta oltre lo iata
+                $scope.airportSelected.airportReached.push({iata: data[i].DestIata, city: data[i].DestCity});
+            }
         }
 	})
 	.error(function(data) {
@@ -97,11 +107,9 @@ $scope.onMarkerOver = function($scope, iataMarker){
 
 	$http.get(expressServer+'/getcarrierorigin/'+iataMarker+'?month='+$scope.monthFilter)
 	.success(function(data) {		
-		$scope.airportSelected.workingCarrier = [];
 		for(var i = 0; i < data.length; i++){
 			document.getElementById("carrierText"+data[i]).style.color = 'red';
 			document.getElementById("carrierText"+data[i]).style.fontWeight = 'bold';
-			$scope.airportSelected.workingCarrier.push(getNameCarrier(data[i]));
 		}
 	})
 	.error(function(data) {
@@ -220,7 +228,6 @@ function initMap($scope, $http, data) {
                             $scope.markerClicked = marker;
                             //$scope.showElements.tableDetailsAirport = false;
                             document.getElementById('infoAirport').style.display = "inline";
-                            console.log($scope.airportSelected);
                         }else{
                         	// Unclick di un marker
                             $scope.markerClicked = null;
@@ -235,21 +242,24 @@ function initMap($scope, $http, data) {
         }, timeout);
 	}
     
-    google.maps.event.addDomListener(window, "load", function() {
+    $(document).ready(function() {
         for (i = 0; i < data.length; i++)
             createMarker(data[i], i*8);
 	});
     
-	$http.get(expressServer+'/getallcarrier')
+	allCarriers($scope, $http); //getAllCarriers
+
+	createInputDate($scope);
+}
+
+function allCarriers($scope, $http){
+    $http.get(expressServer+'/getallcarrier?month='+$scope.monthFilter)
 	.success(function(data) {
 		createControls($scope, data);
-		createFilterLabel($scope);
 	})
 	.error(function(data) {
 		console.log('Error: ' + data);
 	});
-
-	createInputDate($scope);
 }
 
 function createControls($scope, data){
@@ -339,12 +349,16 @@ function createFilterLabel($scope, data){
 
 function createInputDate($scope, data){
 	var dateDiv = document.getElementById('selectMonth');
+    var dateText = document.getElementById('dateText');
 
-	google.maps.event.addDomListener(window, "load", function() {
+	$(document).ready(function() {
 		dateDiv.style.display = "inline";
+        dateText.style.display = "inline";
 	});
 
 	map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(dateDiv);
+    
+    createFilterLabel($scope);
 }
 
 function drawLine($scope, airport1, airport2, stroke) {
