@@ -47,6 +47,15 @@ $scope.filter = function() {
 		document.getElementById('filterMonthLabel').innerHTML = parseDate($scope.monthFilter);
         document.getElementById('allcarrier').remove();
         allCarriers($scope, $http); //this time, filtered by month
+        
+        if($scope.carrierClicked != null){
+            window.setTimeout(function() {
+                if(document.getElementById('carrierText'+$scope.carrierClicked) != null){
+                    document.getElementById('carrierText'+$scope.carrierClicked).style.color = "green";
+                    document.getElementById('carrierText'+$scope.carrierClicked).style.fontWeight = "bolder";
+                }
+            }, 100);
+        }
 	}
 
 	if($scope.carrierClicked != null){
@@ -63,17 +72,26 @@ $scope.filter = function() {
 $scope.resetFilter = function() {
 	$scope.monthFilter = "";
     
-    document.getElementById('allcarrier').remove();
-    allCarriers($scope, $http); //reset allCarrier without filtering
-    
+    if(document.getElementById('allcarrier') != null)
+        document.getElementById('allcarrier').remove();
+    window.setTimeout(function() {
+        allCarriers($scope, $http); //reset allCarrier without filtering
+    }, 20);
+        
 	if($scope.carrierClicked != null){
+        window.setTimeout(function() {
+                if(document.getElementById('carrierText'+$scope.carrierClicked) != null){
+                    document.getElementById('carrierText'+$scope.carrierClicked).style.color = "green";
+                    document.getElementById('carrierText'+$scope.carrierClicked).style.fontWeight = "bolder";
+                }
+            }, 100);
 		$scope.onCarrierClick($scope.carrierClicked);
 	}
 
 	if($scope.markerClicked != null){
         window.setTimeout(function() {
 		  $scope.onMarkerOver($scope, $scope.markerClicked.iata);
-        }, 50); 
+        }, 100); 
 	}
 
 	document.getElementById('labelfilter').style.display = "none";
