@@ -248,6 +248,8 @@ function initMap($scope, $http, data) {
 	});
     
 	allCarriers($scope, $http); //getAllCarriers
+
+	createInputDate($scope);
 }
 
 function allCarriers($scope, $http){
@@ -258,8 +260,6 @@ function allCarriers($scope, $http){
 	.error(function(data) {
 		console.log('Error: ' + data);
 	});
-
-	createInputDate($scope);
 }
 
 function createControls($scope, data){
