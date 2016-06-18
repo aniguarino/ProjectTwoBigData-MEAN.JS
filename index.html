@@ -30,10 +30,24 @@
                 </div>
             </div>
         </div>
-        <div id="infoRoute" class="text tableInfo" title="Informazioni sulla rotta cliccata" ng-show="showElements.tableDetailsAirport"></div>
+        <div id="infoRoute" class="text tableInfo" title="Informazioni sulla rotta cliccata" ng-show="showElements.tableDetailsAirport">
+            <div id="iataRouteOrigin" class="textMedium" title="Iata d'origine">IATA d'origine: {{ routeSelected.originIata }}</div>
+            <div id="cityRouteOrigin" class="textMedium" title="Città d'origine">Citta' d'origine: {{ routeSelected.originCity }}</div>
+            <div id="iataRouteDest" class="textMedium" title="Iata di destinazione">IATA di destinazione: {{ routeSelected.destIata }}</div>
+            <div id="cityRouteDest" class="textMedium" title="Città di destinazione">Citta' di destinazione: {{ routeSelected.destCity }}</div>
+            <div id="airtimeRoute" class="textMedium" title="Tempo di volo">Tempo di volo medio: {{ routeSelected.airTime }}</div>
+            <div id="distanceMilesRoute" class="textMedium" title="Distanza in miglia">Distanza in miglia: {{ routeSelected.distanceMiles }}</div>
+            <div id="distanceKmRoute" class="textMedium" title="Distanza in chilometri">Distanza in chilometri: {{ routeSelected.distanceKm }}</div>
+            <ul>
+                <li class="text" ng-repeat="carrier in routeSelected.workingCarrier">
+                    <div class="text" title="Compagnia">Compagnie che servono la rotta: {{ carrier }}</div>
+                </li>
+            </ul>
+        </div>
+        
         <div id="infoAirport" class="tableInfo" title="Informazioni sull'aereoporto cliccato" ng-show="showElements.tableDetailsAirport">
-            <div id="iata" class="textLarge" title="Iata aeroporto">{{ airportSelected.iata }}</div>
-            <div id="city" class="textMedium" title="Città aeroporto">{{ airportSelected.city }}</div>
+            <div id="iataAirport" class="textLarge" title="Iata aeroporto">{{ airportSelected.iata }}</div>
+            <div id="cityAirport" class="textMedium" title="Città aeroporto">{{ airportSelected.city }}</div>
             <ul>
                 <li class="text" ng-repeat="airport in airportSelected.airportReached">
                     <div class="text" title="Aeroporto raggiunto">{{ airport }}</div>
