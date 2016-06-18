@@ -21,23 +21,23 @@ app.use(methodOverride());
 
 // define models =================
 var allMarkers = mongoose.model('markers', {
-    text : String
+	text : String
 });
 
 var allRoutes = mongoose.model('routes', {
-    text : String
+	text : String
 });
 
 var allRoutesDistinct = mongoose.model('distinctroutes', {
-    text : String
+	text : String
 });
 
 var allCompanies = mongoose.model('aircompanies', {
-    text : String
+	text : String
 });
 
 var statsCarrier = mongoose.model('stats', {
-    text : String
+	text : String
 });
 
 // listen server ======================================
@@ -52,9 +52,9 @@ module.exports = allCompanies;
 module.exports = statsCarrier;
 
 app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+	next();
 });
 
 // get all markers via Rest API
@@ -63,7 +63,7 @@ app.get('/getmarkers', function(req, res, next) {
     allMarkers.find(function(err, markers) {
         // if there is an error retrieving, send the error. nothing after res.send(err) will execute
         if (err)
-            res.send(err)
+        	res.send(err)
 
         res.json(markers); // return all markers in JSON format
     });
@@ -75,31 +75,45 @@ app.get('/getroutes', function(req, res, next) {
     allRoutes.find(function(err, routes) {
         // if there is an error retrieving, send the error. nothing after res.send(err) will execute
         if (err)
-            res.send(err)
+        	res.send(err)
 
         res.json(routes); // return all routes in JSON format
     });
 });
 
 // get all routes about a specific origin via Rest API
-app.get('/getroutesorigin/:origin', function(req, res, next) {
-    var origin = req.params.origin;
-    var dateFilter = req.query.month;
+app.get('/getrouteinfo', function(req, res, next) {
+	var originIata = req.query.origin;
+	var destIata = req.query.dest;
     // use mongoose to get all routes about a specific origin in the database
-    if(dateFilter == null || dateFilter == ""){
-        allRoutes.find({'OriginIata': origin}, function(err, routes) {
+    allRoutes.find({'OriginIata': originIata, 'DestIata': destIata}, {'UniqueCarrier':1, 'FlightDateMax':1, 'FlightDateMin':1}, function(err, routes) {
             // if there is an error retrieving, send the error. nothing after res.send(err) will execute
             if (err)
-                res.send(err)
+            	res.send(err)
+            
+            res.json(routes); // return all routes about a specific origin in JSON format
+        });
+});
+
+// get all routes about a specific origin via Rest API
+app.get('/getroutesorigin/:origin', function(req, res, next) {
+	var origin = req.params.origin;
+	var dateFilter = req.query.month;
+    // use mongoose to get all routes about a specific origin in the database
+    if(dateFilter == null || dateFilter == ""){
+    	allRoutes.find({'OriginIata': origin}, function(err, routes) {
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if (err)
+            	res.send(err)
             
             res.json(routes); // return all routes about a specific origin in JSON format
         });
     }else{
-        dateFilter = dateFilter+"-15";
-        allRoutes.find({$and: [{FlightDateMax: { $gte: dateFilter}}, {FlightDateMin: { $lte: dateFilter}},{OriginIata: origin}]}, function(err, routes) {
+    	dateFilter = dateFilter+"-15";
+    	allRoutes.find({$and: [{FlightDateMax: { $gte: dateFilter}}, {FlightDateMin: { $lte: dateFilter}},{OriginIata: origin}]}, function(err, routes) {
         // if there is an error retrieving, send the error. nothing after res.send(err) will execute
         if (err)
-            res.send(err)
+        	res.send(err)
         
         res.json(routes); // return all routes about a specific origin in JSON format
     });
@@ -108,23 +122,23 @@ app.get('/getroutesorigin/:origin', function(req, res, next) {
 
 // only for visualization
 app.get('/getroutesorigindistinct/:origin', function(req, res, next) {
-    var origin = req.params.origin;
-    var dateFilter = req.query.month;
+	var origin = req.params.origin;
+	var dateFilter = req.query.month;
     // use mongoose to get all routes about a specific origin in the database
     if(dateFilter == null || dateFilter == ""){
-        allRoutesDistinct.find({'OriginIata': origin}, function(err, routes) {
+    	allRoutesDistinct.find({'OriginIata': origin}, function(err, routes) {
             // if there is an error retrieving, send the error. nothing after res.send(err) will execute
             if (err)
-                res.send(err)
+            	res.send(err)
             
             res.json(routes); // return all routes about a specific origin in JSON format
         });
     }else{
-        dateFilter = dateFilter+"-15";
-        allRoutesDistinct.find({$and: [{FlightDateMax: { $gte: dateFilter}}, {FlightDateMin: { $lte: dateFilter}},{OriginIata: origin}]}, function(err, routes) {
+    	dateFilter = dateFilter+"-15";
+    	allRoutesDistinct.find({$and: [{FlightDateMax: { $gte: dateFilter}}, {FlightDateMin: { $lte: dateFilter}},{OriginIata: origin}]}, function(err, routes) {
         // if there is an error retrieving, send the error. nothing after res.send(err) will execute
         if (err)
-            res.send(err)
+        	res.send(err)
         
         res.json(routes); // return all routes about a specific origin in JSON format
     });
@@ -133,23 +147,23 @@ app.get('/getroutesorigindistinct/:origin', function(req, res, next) {
 
 // get all routes about a specific air carrier via Rest API
 app.get('/getroutescarrier/:carrier', function(req, res, next) {
-    var carrier = req.params.carrier;
-    var dateFilter = req.query.month;
+	var carrier = req.params.carrier;
+	var dateFilter = req.query.month;
     // use mongoose to get all routes about a specific air carrier in the database
     if(dateFilter == null || dateFilter == ""){
-        allRoutes.find({'UniqueCarrier': carrier}, function(err, routes) {
+    	allRoutes.find({'UniqueCarrier': carrier}, function(err, routes) {
             // if there is an error retrieving, send the error. nothing after res.send(err) will execute
             if (err)
-                res.send(err)
+            	res.send(err)
             
             res.json(routes); // return all routes about a specific air carrier in JSON format
         });
     }else{
-        dateFilter = dateFilter+"-15";
-        allRoutes.find({$and: [{FlightDateMax: { $gte: dateFilter}}, {FlightDateMin: { $lte: dateFilter}},{'UniqueCarrier': carrier}]}, function(err, routes) {
+    	dateFilter = dateFilter+"-15";
+    	allRoutes.find({$and: [{FlightDateMax: { $gte: dateFilter}}, {FlightDateMin: { $lte: dateFilter}},{'UniqueCarrier': carrier}]}, function(err, routes) {
             // if there is an error retrieving, send the error. nothing after res.send(err) will execute
             if (err)
-                res.send(err)
+            	res.send(err)
             
             res.json(routes); // return all routes about a specific air carrier in JSON format
         });
@@ -158,22 +172,22 @@ app.get('/getroutescarrier/:carrier', function(req, res, next) {
 
 // get all air carrier via Rest API
 app.get('/getallcarrier', function(req, res, next) {
-    var dateFilter = req.query.month;
-    if(dateFilter == null || dateFilter == ""){
+	var dateFilter = req.query.month;
+	if(dateFilter == null || dateFilter == ""){
         // use mongoose to get all air carrier in the database
         allRoutes.find().distinct('UniqueCarrier', function(err, carriers) {
             // if there is an error retrieving, send the error. nothing after res.send(err) will execute
             if (err)
-                res.send(err)
+            	res.send(err)
 
             res.json(carriers); // return all air carrier in JSON format
         });
     }else{
-        dateFilter = dateFilter+"-15";
-        allRoutes.find({$and: [{FlightDateMax: { $gte: dateFilter}}, {FlightDateMin: { $lte: dateFilter}}]}).distinct('UniqueCarrier', function(err, carriers) {
+    	dateFilter = dateFilter+"-15";
+    	allRoutes.find({$and: [{FlightDateMax: { $gte: dateFilter}}, {FlightDateMin: { $lte: dateFilter}}]}).distinct('UniqueCarrier', function(err, carriers) {
             // if there is an error retrieving, send the error. nothing after res.send(err) will execute
             if (err)
-                res.send(err)
+            	res.send(err)
             
             res.json(carriers); // return all air carrier about routes from one marker in JSON format
         });
@@ -187,7 +201,7 @@ app.get('/getnamecarrier/:code', function(req, res, next) {
     allCompanies.find({'Code': code},{Description:1}, function(err, carrier) {
         // if there is an error retrieving, send the error. nothing after res.send(err) will execute
         if (err)
-            res.send(err)
+        	res.send(err)
 
         res.json(carrier); // return about an air company in JSON format
     });
@@ -195,23 +209,23 @@ app.get('/getnamecarrier/:code', function(req, res, next) {
 
 // get all air carrier about routes from one marker via Rest API
 app.get('/getcarrierorigin/:origin', function(req, res, next) {
-    var origin = req.params.origin;
-    var dateFilter = req.query.month;
+	var origin = req.params.origin;
+	var dateFilter = req.query.month;
     // use mongoose to get all air carrier about routes from one marker in the database
     if(dateFilter == null || dateFilter == ""){
-        allRoutes.find({'OriginIata': origin}).distinct('UniqueCarrier', function(err, carriers) {
+    	allRoutes.find({'OriginIata': origin}).distinct('UniqueCarrier', function(err, carriers) {
             // if there is an error retrieving, send the error. nothing after res.send(err) will execute
             if (err)
-                res.send(err)
+            	res.send(err)
             
             res.json(carriers); // return all air carrier about routes from one marker in JSON format
         });
     }else{
-        dateFilter = dateFilter+"-15";
-        allRoutes.find({$and: [{FlightDateMax: { $gte: dateFilter}}, {FlightDateMin: { $lte: dateFilter}},{'OriginIata': origin}]}).distinct('UniqueCarrier', function(err, carriers) {
+    	dateFilter = dateFilter+"-15";
+    	allRoutes.find({$and: [{FlightDateMax: { $gte: dateFilter}}, {FlightDateMin: { $lte: dateFilter}},{'OriginIata': origin}]}).distinct('UniqueCarrier', function(err, carriers) {
             // if there is an error retrieving, send the error. nothing after res.send(err) will execute
             if (err)
-                res.send(err)
+            	res.send(err)
             
             res.json(carriers); // return all air carrier about routes from one marker in JSON format
         });
@@ -220,26 +234,26 @@ app.get('/getcarrierorigin/:origin', function(req, res, next) {
 
 // get other info about a specific air carrier in specific year and month via Rest API
 app.get('/getcarrierinfo/:carrier', function(req, res, next) {
-    var carrier = req.params.carrier;
-    var dateFilter = req.query.month;
+	var carrier = req.params.carrier;
+	var dateFilter = req.query.month;
     // use mongoose to get info about a specific air carrier in specific year and month in the database
     if(dateFilter == null || dateFilter == ""){
         //caso in cui non ho nessun filtro, va richiamata una nuova collezione da fare per un grafico più generico
         console.log("nessun filtro impostato!");
     }else{
-        var year = dateFilter.substring(0, 4);
-        var month;
-        if(dateFilter.slice(-2).charAt(0) === '0')
-            month = dateFilter.slice(-1);
-        else
-            month = dateFilter.slice(-2);
-        
+    	var year = dateFilter.substring(0, 4);
+    	var month;
+    	if(dateFilter.slice(-2).charAt(0) === '0')
+    		month = dateFilter.slice(-1);
+    	else
+    		month = dateFilter.slice(-2);
+
         //console.log(year);
         //console.log(mon);
         statsCarrier.find({'UniqueCarrier': carrier, 'Year': year, 'Month': month}).sort({'DayOfWeek': 1}).exec( function(err, infocarrier) {
             // if there is an error retrieving, send the error. nothing after res.send(err) will execute
             if (err)
-                res.send(err)
+            	res.send(err)
             
             res.json(infocarrier); // return JSON format
         });
