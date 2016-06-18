@@ -240,6 +240,8 @@ function initMap($scope, $http, data) {
                         $scope.onMarkerNotOver($scope, lastIataClicked);
                         $scope.markerClicked = marker;
                         $scope.onMarkerOver($scope, info.Iata);
+                        document.getElementById('infoRoute').style.display = "none";
+                        document.getElementById('infoAirport').style.display = "inline";
                     }else{
                         if($scope.markerClicked == null){
                         	// Click di un marker
