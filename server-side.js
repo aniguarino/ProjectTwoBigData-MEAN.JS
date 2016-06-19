@@ -86,11 +86,15 @@ app.get('/getrouteinfo', function(req, res, next) {
 	var originIata = req.query.origin;
 	var destIata = req.query.dest;
     // use mongoose to get all routes about a specific origin in the database
-    allRoutes.find({'OriginIata': originIata, 'DestIata': destIata}, {'UniqueCarrier':1, 'FlightDateMax':1, 'FlightDateMin':1}, function(err, routes) {
+    allRoutes.find({'OriginIata': originIata, 'DestIata': destIata}, {'UniqueCarrier':1, 'FlightDateMax':1, 'FlightDateMin':1, 'MeanDepDelay':1,
+    			'CountDelayDep0':1, 'CountDelayDep15':1, 'CountDelayDep60':1, 'CountDelayDep3h':1, 'CountDelayDep24h':1, 'CountDelayDepOther':1,
+    			'MeanArrDelay':1, 'CountDelayArr0':1, 'CountDelayArr15':1, 'CountDelayArr60':1, 'CountDelayArr3h':1, 'CountDelayArr24h':1,
+    			'CountDelayArrOther':1
+					}, function(err, routes) {
             // if there is an error retrieving, send the error. nothing after res.send(err) will execute
             if (err)
             	res.send(err)
-            
+
             res.json(routes); // return all routes about a specific origin in JSON format
         });
 });
