@@ -414,6 +414,7 @@
                                 $scope.markerClicked = marker;
                                 //$scope.showElements.tableDetailsAirport = false;
                                 document.getElementById('infoAirport').style.display = "inline";
+                                document.getElementById('infoCarrierDelays').style.display = "none";
                             }else{
                                 // Unclick di un marker
                                 $scope.markerClicked = null;
