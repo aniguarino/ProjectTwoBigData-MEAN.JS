@@ -37,7 +37,7 @@
             <div id="distanceRoute" class="textMedium" title="Distanza in miglia">Distanza in miglia: {{ routeSelected.distanceMiles }} - Distanza in chilometri: {{ routeSelected.distanceKm }}</div>    
             <h3>Compagnie che servono la rotta:</h3>
           
-            <select ng-model="currentCarrier" ng-change="showInfoCarrier()">
+            <select id="selectCarrier" ng-init="currentCarrier = options[0]" ng-model="currentCarrier" ng-change="showInfoCarrier()">
                 <option ng-repeat="carrier in routeSelected.workingCarrier">
                     {{ carrier.UniqueCarrier }}
                 </option>
