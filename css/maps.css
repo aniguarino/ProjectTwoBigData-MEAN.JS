@@ -173,14 +173,14 @@ body{
     position: relative;
     padding-bottom: 8%;
 }
-.graphMeans {
+.graphMeans, .graphCountDelaysDep {
 	float: left;
     width: 25%;
     padding-bottom: 8%;
     padding-left: 2%;
     padding-right: 2%;
 }
-.graphCount {
+.graphCount, .graphCountDelaysArr {
     float: right;
     width: 65%;
     padding-bottom: 8%;

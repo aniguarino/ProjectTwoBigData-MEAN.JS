@@ -31,28 +31,36 @@
             </div>
         </div>
         <div id="infoRoute" class="text tableInfo" title="Informazioni sulla rotta cliccata" ng-show="showElements.tableDetailsAirport">
-            <div id="iataRouteOrigin" class="textMedium" title="Iata d'origine">IATA d'origine: {{ routeSelected.originIata }}</div>
-            <div id="cityRouteOrigin" class="textMedium" title="Città d'origine">Citta' d'origine: {{ routeSelected.originCity }}</div>
-            <div id="iataRouteDest" class="textMedium" title="Iata di destinazione">IATA di destinazione: {{ routeSelected.destIata }}</div>
-            <div id="cityRouteDest" class="textMedium" title="Città di destinazione">Citta' di destinazione: {{ routeSelected.destCity }}</div>
+            <div id="RouteOrigin" class="textMedium" title="Iata d'origine">(ORIGINE) IATA Code: {{ routeSelected.originIata }} - Citta': {{ routeSelected.originCity }}</div>
+            <div id="RouteDest" class="textMedium" title="Iata di destinazione">(DESTINAZIONE) IATA Code: {{ routeSelected.destIata }} - Citta': {{ routeSelected.destCity }}</div>
             <div id="airtimeRoute" class="textMedium" title="Tempo di volo">Tempo di volo medio: {{ routeSelected.airTime }}</div>
-            <div id="distanceMilesRoute" class="textMedium" title="Distanza in miglia">Distanza in miglia: {{ routeSelected.distanceMiles }}</div>
-            <div id="distanceKmRoute" class="textMedium" title="Distanza in chilometri">Distanza in chilometri: {{ routeSelected.distanceKm }}</div>
-            <ul>
-                <li class="text" ng-repeat="carrier in routeSelected.workingCarrier">
-                    <div class="text" title="Compagnia">Compagnie che servono la rotta: {{ carrier }}</div>
-                </li>
-            </ul>
+            <div id="distanceRoute" class="textMedium" title="Distanza in miglia">Distanza in miglia: {{ routeSelected.distanceMiles }} - Distanza in chilometri: {{ routeSelected.distanceKm }}</div>    
+            <h3>Compagnie che servono la rotta:</h3>
+          
+            <select ng-model="currentCarrier" ng-change="showInfoCarrier()">
+                <option ng-repeat="carrier in routeSelected.workingCarrier">
+                    {{ carrier.UniqueCarrier }}
+                </option>
+            </select>
+            <br><br>
+            <div id="carrierDetails"></div>
+            <br><br>
+        </div>
+        <div id="infoCarrierDelays">
+            <div id="graphCountDelaysDep" class="graph graphCountDelaysDep" title="Grafico informativo" style="height:300px;"></div>
+            <div id="graphCountDelaysArr" class="graph graphCountDelaysArr" title="Grafico informativo" style="height:300px;"></div>
         </div>
         
         <div id="infoAirport" class="tableInfo" title="Informazioni sull'aereoporto cliccato" ng-show="showElements.tableDetailsAirport">
             <div id="iataAirport" class="textLarge" title="Iata aeroporto">{{ airportSelected.iata }}</div>
-            <div id="cityAirport" class="textMedium" title="Città aeroporto">{{ airportSelected.city }}</div>
-            <ul>
-                <li class="text" ng-repeat="airport in airportSelected.airportReached">
-                    <div class="text" title="Aeroporto raggiunto">{{ airport }}</div>
-                </li>
-            </ul>
+            <div id="cityAirport" class="textMedium" title="Citta' aeroporto">{{ airportSelected.city }}</div>
+            
+            <h4>Lista delle destinazioni dall'aeroporto corrente:</h4>
+            <select>
+                <option ng-repeat="airport in airportSelected.airportReached">
+                    IATA Code: {{ airport.iata }} - Citta': {{ airport.city }}
+                </option>
+            </select>
         </div>
         <div id="infoCarrier">
             <div id="graphMeans" class="graph graphMeans" title="Grafico informativo" style="height:300px;"></div>
