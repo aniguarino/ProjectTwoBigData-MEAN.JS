@@ -501,7 +501,7 @@
             },			
             axisY: {
                 title: "Numero di voli"
-            },		
+            },
             data: [ 
             {
                 type: "column",	
@@ -575,7 +575,7 @@
             },			
             axisY: {
                 title: "Numero di voli"
-            },		
+            },
             data: [ 
             {
                 type: "column",	
@@ -1026,7 +1026,7 @@
     		},			
     		axisY: {
     			title: "Numero di voli"
-    		},		
+    		},
     		data: [ 
     		{
     			type: "column",	
@@ -1094,10 +1094,9 @@
         var datas = [];
         
         for(var i=0; i<data.length; i++)
-            points.push({x: data[i].Month+"-"+data[i].Year, y: data[i].CountGhostFlight, label: "Voli totali: "+data[i].CountAllFlight, percent: data[i].GhostFlightPercent});
-        
-        for(var i=0; i<points.length; i++)
-            datas.push({type: "spline", toolTipContent: "Percentuale: "+points[i].percent, dataPoints: points[i]});
+            points.push({x: new Date(data[i].Year, data[i].Month, 1), y: parseFloat(data[i].GhostFlightPercent.substring(0,5)), countGhost: data[i].CountGhostFlight, countAll: data[i].CountAllFlight});
+
+        datas.push({type: "spline", toolTipContent: "Voli fantasma: {countGhost}</br>Voli totali: {countAll}</br>Percentuale: {y}%", dataPoints: points});
         
         console.log(datas);
         
@@ -1108,6 +1107,8 @@
           },
            data: datas
         });
+
+        console.log(chart);
 
         chart.render();
     }
