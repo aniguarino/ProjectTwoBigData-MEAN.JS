@@ -270,11 +270,11 @@ app.get('/getcarrierinfo/:carrier', function(req, res, next) {
     }
 });
 
-// get other info about a specific air carrier in specific year and month via Rest API
+// get ghost flights info about a specific air carrier in specific year and month via Rest API
 app.get('/getghostflights/:carrier', function(req, res, next) {
 	var carrier = req.params.carrier;
 	var dateFilter = req.query.month;
-    // use mongoose to get info about a specific air carrier in specific year and month in the database
+    // use mongoose to get ghost flights info about a specific air carrier in specific year and month in the database
     if(dateFilter == null || dateFilter == ""){
         ghostFlights.find({'UniqueCarrier': carrier}).sort({'Year': 1, 'Month':1}).exec( function(err, ghostflights) {
             // if there is an error retrieving, send the error. nothing after res.send(err) will execute
