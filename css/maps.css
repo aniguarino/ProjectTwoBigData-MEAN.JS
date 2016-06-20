@@ -173,7 +173,7 @@ body{
     position: relative;
     padding-bottom: 8%;
 }
-.graphMeans, .graphCountDelaysDep, .graphAirportDelaysDep {
+.graphMeans, .graphCountDelaysDep, .graphAirportDelaysDep, .graphGhostFlightsCarrier {
 	float: left;
     width: 25%;
     padding-bottom: 8%;
