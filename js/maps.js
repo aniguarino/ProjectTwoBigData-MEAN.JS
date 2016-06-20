@@ -39,7 +39,8 @@
     $scope.filter = function() {
     	var month = document.getElementById('monthFilter').value;
     	$scope.monthFilter = month;
-
+        document.getElementById('infoGhostFlights').style.display = "none";
+        
     	if(month != ""){
     		document.getElementById('labelfilter').style.display = "inline";
     		document.getElementById('dateReset').style.display = "inline";
@@ -185,8 +186,24 @@
     			console.log('Error: ' + data);
     		});
     	}
+        
+        if($scope.monthFilter == null || $scope.monthFilter == ""){
+    		$http.get(expressServer+'/getghostflights/'+carrierCode)
+    		.success(function(data) {
+                document.getElementById('infoCarrierDelays').style.display = "none";
+                document.getElementById('infoAirportDelays').style.display = "none";
+    			document.getElementById('infoCarrier').style.display = "none";
+                document.getElementById('infoGhostFlights').style.display = "inline";
+    			createGraphGhostFlights($scope, carrierCode, data);
+            })
+    		.error(function(data) {
+    			console.log('Error: ' + data);
+    		});
+    	}
+        
+        
     };
-
+        
     $scope.showInfoCarrier = function() {
 
     	for(var i=0; i<$scope.routeSelected.workingCarrier.length; i++){
@@ -679,7 +696,10 @@
     					this.style.fontWeight = "normal";
     					removeAllLines($scope);
     					setMarkersOpacity($scope, 1);
+                        document.getElementById('infoRoute').style.display = "none";
+                        document.getElementById('infoCarrierDelays').style.display = "none";
     					document.getElementById("infoCarrier").style.display = "none";
+                        document.getElementById('infoGhostFlights').style.display = "none";
     				}
     			}
     		});
@@ -747,10 +767,12 @@
 
     	google.maps.event.addListener(flightPath, 'click', function(){
     		document.getElementById('infoRoute').style.display = "inline";
+            document.getElementById('infoCarrier').style.display = "none";
     		document.getElementById('infoAirport').style.display = "none";
             document.getElementById('carrierDetails').style.display = "none";
             document.getElementById('infoCarrierDelays').style.display = "none";
             document.getElementById('infoAirportDelays').style.display = "none";
+            document.getElementById('infoGhostFlights').style.display = "none";
 
     		$http.get(expressServer+'/getrouteinfo?origin='+flightPath.originIata+'&dest='+flightPath.destIata)
     		.success(function(data) {
@@ -1064,4 +1086,28 @@
     	});
 
     	chartGraphCount.render();
+    }
+
+    function createGraphGhostFlights($scope, carrierCode, data){
+        
+        var points = [];
+        var datas = [];
+        
+        for(var i=0; i<data.length; i++)
+            points.push({x: data[i].Month+"-"+data[i].Year, y: data[i].CountGhostFlight, label: "Voli totali: "+data[i].CountAllFlight, percent: data[i].GhostFlightPercent});
+        
+        for(var i=0; i<points.length; i++)
+            datas.push({type: "spline", toolTipContent: "Percentuale: "+points[i].percent, dataPoints: points[i]});
+        
+        console.log(datas);
+        
+        var chart = new CanvasJS.Chart("graphGhostFlightsCarrier",
+        {
+          title:{
+          text: "Voli fantasma per "+getNameCarrier(data[0].UniqueCarrier)
+          },
+           data: datas
+        });
+
+        chart.render();
     }

@@ -30,6 +30,9 @@
                 </div>
             </div>
         </div>
+        <div id="infoGhostFlights" style="display: none">
+            <div id="graphGhostFlightsCarrier" class="graph graphGhostFlightsCarrier" title="Grafico informativo" style="height:300px;"></div>
+        </div>
         <div id="infoRoute" class="text tableInfo" title="Informazioni sulla rotta cliccata" ng-show="showElements.tableDetailsAirport">
             <div id="RouteOrigin" class="textMedium" title="Iata d'origine">(ORIGINE) IATA Code: {{ routeSelected.originIata }} - Citta': {{ routeSelected.originCity }}</div>
             <div id="RouteDest" class="textMedium" title="Iata di destinazione">(DESTINAZIONE) IATA Code: {{ routeSelected.destIata }} - Citta': {{ routeSelected.destCity }}</div>
