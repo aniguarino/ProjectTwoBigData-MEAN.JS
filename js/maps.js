@@ -21,9 +21,8 @@
     $scope.airportSelected = {
     	iata: "",
     	city: "",
-    	meanDelayDep: "",
-    	meanDelayArr: "",
-    	airportReached: []
+    	airportReached: [],
+        airportInfoGraphs: []
     }
 
     $scope.routeSelected = {
@@ -117,6 +116,9 @@
                     // Possibilità di aggiungere il nome della città raggiunta oltre lo iata
                     $scope.airportSelected.airportReached.push({iata: data[i].DestIata, city: data[i].DestCity});
                 }
+                
+                $scope.airportSelected.airportInfoGraphs = [];      
+                $scope.airportSelected.airportInfoGraphs.push({meanDelayDep: $scope.markers[data[0].OriginIata].meanDelayDep, meanDelayArr: $scope.markers[data[0].OriginIata].meanDelayArr, countDelayDep0: $scope.markers[data[0].OriginIata].countDelayDep0, countDelayDep15: $scope.markers[data[0].OriginIata].countDelayDep15, countDelayDep60: $scope.markers[data[0].OriginIata].countDelayDep60, countDelayDep3h: $scope.markers[data[0].OriginIata].countDelayDep3h, countDelayDep24h: $scope.markers[data[0].OriginIata].countDelayDep24h, countDelayDepOther: $scope.markers[data[0].OriginIata].countDelayDepOther, countDelayArr0: $scope.markers[data[0].OriginIata].countDelayArr0, countDelayArr15: $scope.markers[data[0].OriginIata].countDelayArr15, countDelayArr60: $scope.markers[data[0].OriginIata].countDelayArr60, countDelayArr3h: $scope.markers[data[0].OriginIata].countDelayArr3h, countDelayArr24h: $scope.markers[data[0].OriginIata].countDelayArr24h, countDelayArrOther: $scope.markers[data[0].OriginIata].countDelayArrOther});
             }
         })
     	.error(function(data) {
@@ -377,6 +379,24 @@
     				title: info.Iata+" - "+info.LabelCity,
     				icon: 'js/icons/airport.png',
     				iata: info.Iata,
+                    city: info.LabelCity,
+                    meanDelayDep: info.MeanDelayDep,
+                    meanDelayArr: info.MeanDelayArr,
+                    
+                    countDelayDep0: info.CountDelayDep0,
+                    countDelayDep15: info.CountDelayDep15,
+                    countDelayDep60: info.CountDelayDep60,
+                    countDelayDep3h: info.CountDelayDep3h,
+                    countDelayDep24h: info.CountDelayDep24h,
+                    countDelayDepOther: info.CountDelayDepOther,
+                    
+                    countDelayArr0: info.CountDelayArr0,
+                    countDelayArr15: info.CountDelayArr15,
+                    countDelayArr60: info.CountDelayArr60,
+                    countDelayArr3h: info.CountDelayArr3h,
+                    countDelayArr24h: info.CountDelayArr24h,
+                    countDelayArrOther: info.CountDelayArrOther,
+                    
     				opacity: 1,
     				animation: google.maps.Animation.DROP
     			});
@@ -405,13 +425,20 @@
                             document.getElementById('carrierDetails').style.display = "none";
                             document.getElementById('infoCarrierDelays').style.display = "none";
                             document.getElementById('infoAirport').style.display = "inline";
+                            document.getElementById('infoAirportDelays').style.display = "inline";
+                            window.setTimeout(function() {
+                                showGraphsAirport ($scope);
+                            }, 100);
                         }else{
                         	if($scope.markerClicked == null){
                                 // Click di un marker
                                 $scope.markerClicked = marker;
                                 //$scope.showElements.tableDetailsAirport = false;
                                 document.getElementById('infoAirport').style.display = "inline";
+                                document.getElementById('infoAirportDelays').style.display = "inline";
                                 document.getElementById('infoCarrierDelays').style.display = "none";
+                                showGraphsAirport ($scope);
+                                
                             }else{
                                 // Unclick di un marker
                                 $scope.markerClicked = null;
@@ -420,6 +447,7 @@
                                 document.getElementById('carrierDetails').style.display = "none";
                                 document.getElementById('infoCarrierDelays').style.display = "none";
                                 document.getElementById('infoAirport').style.display = "none";
+                                document.getElementById('infoAirportDelays').style.display = "none";
                             }
                         }
                     }
@@ -437,6 +465,157 @@
         allCarriers($scope, $http); //getAllCarriers
 
         createInputDate($scope);
+    }
+
+    function showGraphsAirport ($scope){
+            
+        var chartGraphCountDep = new CanvasJS.Chart("graphAirportDelaysDep",
+        {
+            theme: "theme3",
+            animationEnabled: true,
+            title:{
+                text: "Ritardi voli in partenza per l'aeroporto di "+$scope.airportSelected.city,
+                fontSize: 30
+            },
+            toolTip: {
+                shared: true
+            },			
+            axisY: {
+                title: "Numero di voli"
+            },		
+            data: [ 
+            {
+                type: "column",	
+                name: "In orario",
+                legendText: "In orario",
+                showInLegend: true, 
+                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayDep0, label: " "}]
+            },
+            {
+                type: "column",	
+                name: "Ritardo entro 15 minuti",
+                legendText: "Ritardo entro 15 minuti",
+                showInLegend: true, 
+                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayDep15, label: " "}]
+            },
+            {
+                type: "column",	
+                name: "Ritardo entro 1 ora",
+                legendText: "Ritardo entro 1 ora",
+                showInLegend: true, 
+                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayDep60, label: " "}]
+            },
+            {
+                type: "column",	
+                name: "Ritardo entro 3 ore",
+                legendText: "Ritardo entro 3 ore",
+                showInLegend: true, 
+                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayDep3h, label: " "}]
+            },
+            {
+                type: "column",	
+                name: "Ritardo entro 24 ore",
+                legendText: "Ritardo entro 24 ore",
+                showInLegend: true, 
+                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayDep24h, label: " "}]
+            },
+            {
+                type: "column",	
+                name: "Ritardo oltre un giorno",
+                legendText: "Ritardo oltre un giorno",
+                showInLegend: true, 
+                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayDepOther, label: " "}]
+            }
+            ],
+            legend:{
+                cursor:"pointer",
+                itemclick: function(e){
+                    if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                        e.dataSeries.visible = false;
+                    }
+                    else {
+                        e.dataSeries.visible = true;
+                    }
+                    chartGraphCountDep.render();
+                }
+            },
+        });
+
+        chartGraphCountDep.render();
+
+        var chartGraphCountArr = new CanvasJS.Chart("graphAirportDelaysArr",
+        {
+            theme: "theme3",
+            animationEnabled: true,
+            title:{
+                text: "Ritardi voli in arrivo per l'aeroporto di "+$scope.airportSelected.city,
+                fontSize: 30
+            },
+            toolTip: {
+                shared: true
+            },			
+            axisY: {
+                title: "Numero di voli"
+            },		
+            data: [ 
+            {
+                type: "column",	
+                name: "In orario",
+                legendText: "In orario",
+                showInLegend: true, 
+                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayArr0, label: " "}]
+            },
+            {
+                type: "column",	
+                name: "Ritardo entro 15 minuti",
+                legendText: "Ritardo entro 15 minuti",
+                showInLegend: true, 
+                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayArr15, label: " "}]
+            },
+            {
+                type: "column",	
+                name: "Ritardo entro 1 ora",
+                legendText: "Ritardo entro 1 ora",
+                showInLegend: true, 
+                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayArr60, label: " "}]
+            },
+            {
+                type: "column",	
+                name: "Ritardo entro 3 ore",
+                legendText: "Ritardo entro 3 ore",
+                showInLegend: true, 
+                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayArr3h, label: " "}]
+            },
+            {
+                type: "column",	
+                name: "Ritardo entro 24 ore",
+                legendText: "Ritardo entro 24 ore",
+                showInLegend: true, 
+                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayArr24h, label: " "}]
+            },
+            {
+                type: "column",	
+                name: "Ritardo oltre un giorno",
+                legendText: "Ritardo oltre un giorno",
+                showInLegend: true, 
+                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayArrOther, label: " "}]
+            }
+            ],
+            legend:{
+                cursor:"pointer",
+                itemclick: function(e){
+                    if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                        e.dataSeries.visible = false;
+                    }
+                    else {
+                        e.dataSeries.visible = true;
+                    }
+                    chartGraphCountArr.render();
+                }
+            },
+        });
+
+        chartGraphCountArr.render();
     }
 
     function allCarriers($scope, $http){
@@ -569,6 +748,7 @@
     		document.getElementById('infoAirport').style.display = "none";
             document.getElementById('carrierDetails').style.display = "none";
             document.getElementById('infoCarrierDelays').style.display = "none";
+            document.getElementById('infoAirportDelays').style.display = "none";
 
     		$http.get(expressServer+'/getrouteinfo?origin='+flightPath.originIata+'&dest='+flightPath.destIata)
     		.success(function(data) {

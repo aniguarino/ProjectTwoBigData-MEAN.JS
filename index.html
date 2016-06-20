@@ -61,7 +61,16 @@
                     IATA Code: {{ airport.iata }} - Citta': {{ airport.city }}
                 </option>
             </select>
+            <br>
+            <h4>Ritardo medio per l'aeroporto sui voli in partenza: {{ airportSelected.airportInfoGraphs[0].meanDelayDep }}<br>Ritardo medio per l'aeroporto sui voli in arrivo: {{ airportSelected.airportInfoGraphs[0].meanDelayArr }}</h4>
+            <br>
+            <h4>Grafici sui ritardi relativi all'aeroporto di {{ airportSelected.city }} considerando tutte le compagnie:</h4>
         </div>
+        <div id="infoAirportDelays">
+            <div id="graphAirportDelaysDep" class="graph graphAirportDelaysDep" title="Grafico informativo" style="height:300px;"></div>
+            <div id="graphAirportDelaysArr" class="graph graphAirportDelaysArr" title="Grafico informativo" style="height:300px;"></div>
+        </div>
+        
         <div id="infoCarrier">
             <div id="graphMeans" class="graph graphMeans" title="Grafico informativo" style="height:300px;"></div>
             <div id="graphCount" class="graph graphCount" title="Grafico informativo" style="height:300px;"></div>
