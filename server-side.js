@@ -40,6 +40,10 @@ var statsCarrier = mongoose.model('stats', {
 	text : String
 });
 
+var ghostFlights = mongoose.model('ghostflights', {
+	text : String
+});
+
 // listen server ======================================
 var port = 8083; //Server port
 app.listen(port); 
@@ -50,12 +54,15 @@ module.exports = allRoutes;
 module.exports = allRoutesDistinct;
 module.exports = allCompanies;
 module.exports = statsCarrier;
+module.exports = ghostFlights;
 
 app.use(function(req, res, next) {
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 	next();
 });
+
+
 
 // get all markers via Rest API
 app.get('/getmarkers', function(req, res, next) {
@@ -243,7 +250,6 @@ app.get('/getcarrierinfo/:carrier', function(req, res, next) {
     // use mongoose to get info about a specific air carrier in specific year and month in the database
     if(dateFilter == null || dateFilter == ""){
         //caso in cui non ho nessun filtro, va richiamata una nuova collezione da fare per un grafico più generico
-        console.log("nessun filtro impostato!");
     }else{
     	var year = dateFilter.substring(0, 4);
     	var month;
@@ -260,6 +266,39 @@ app.get('/getcarrierinfo/:carrier', function(req, res, next) {
             	res.send(err)
             
             res.json(infocarrier); // return JSON format
+        });
+    }
+});
+
+// get other info about a specific air carrier in specific year and month via Rest API
+app.get('/getghostflights/:carrier', function(req, res, next) {
+	var carrier = req.params.carrier;
+	var dateFilter = req.query.month;
+    // use mongoose to get info about a specific air carrier in specific year and month in the database
+    if(dateFilter == null || dateFilter == ""){
+        ghostFlights.find({'UniqueCarrier': carrier}).sort({'Year': 1, 'Month':1}).exec( function(err, ghostflights) {
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if (err)
+            	res.send(err)
+            
+            res.json(ghostflights); // return JSON format
+        });
+    }else{
+    	var year = dateFilter.substring(0, 4);
+    	var month;
+    	if(dateFilter.slice(-2).charAt(0) === '0')
+    		month = dateFilter.slice(-1);
+    	else
+    		month = dateFilter.slice(-2);
+
+        //console.log(year);
+        //console.log(mon);
+        ghostFlights.find({'UniqueCarrier': carrier, 'Year': year, 'Month': month}).exec( function(err, ghostflights) {
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if (err)
+            	res.send(err)
+            
+            res.json(ghostflights); // return JSON format
         });
     }
 });
