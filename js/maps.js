@@ -175,6 +175,8 @@
     	if($scope.monthFilter != null || $scope.monthFilter != ""){
     		$http.get(expressServer+'/getcarrierinfo/'+carrierCode+"?month="+$scope.monthFilter)
     		.success(function(data) {
+                document.getElementById('infoCarrierDelays').style.display = "none";
+                document.getElementById('infoAirportDelays').style.display = "none";
     			document.getElementById("infoCarrier").style.display = "inline";
     			createGraphWeekCarrier($scope, carrierCode, data);
                 //add more graphs here
