@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html ng-app="mapsApp">
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Sezione Mappa</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    
+	<link rel="stylesheet" href="css/maps.css">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
+	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAoX6LaclBapeTtEpltmUNXSNhhMqCmZeI"></script>
+	<script type="text/javascript" src="js/maps.js"></script>
+    <script type="text/javascript" src="js/canvasjs.min.js"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand">Nome Provvisorio</a>
+            </div>
+                <ul class="nav navbar-nav">
+                <li class="active"><a href="index.html">Home</a></li>
+                <li><a href="#">Sezione Mappa</a></li>
+                 <li><a href="HTMLPredictions.html">Sezione Predizioni</a></li>
+                </ul>
+        </div>
+    </nav>
+    
+    <div ng-controller="controllerMap">
+        <div id="bigMap" class="bigMap">
+            <div id="googleMaps" align="center"></div>
+            <div id="selectMonth" style="color: black; font-weight: bold" align= "center" class="button dateDiv" style="display: none">
+                Mese per filtrare le rotte: 
+                <form id="mapFilter" title="Seleziona il mese" ng-submit="filter()">
+                    <input id="monthFilter" type="month" class="button"/>
+                    <input type="submit" id="monthFilterSubmit" class="button" value="Filtra"/>
+                </form>
+            </div>
+            <div id="dateReset" style="display: none; color: black; font-weight: bold" align= "center" class="inputDateResetSubmit">
+                <form id="mapFilterReset" title="Reset filtro mese" ng-submit="resetFilter()">
+                    <input type="submit" id="monthFilterResetSubmit" class="button" value="Disattiva filtro"/>
+                </form>
+            </div>
+        </div>
+        <div id="infoGhostFlights" style="display: none">
+            <div id="graphGhostFlightsCarrier" class="graph graphGhostFlightsCarrier" title="Grafico informativo" style="height:300px;"></div>
+        </div>
+        <div id="infoRoute" class="text tableInfo" title="Informazioni sulla rotta cliccata" ng-show="showElements.tableDetailsAirport">
+            <div id="RouteOrigin" class="textMedium" title="Iata d'origine">(ORIGINE) IATA Code: {{ routeSelected.originIata }} - Citta': {{ routeSelected.originCity }}</div>
+            <div id="RouteDest" class="textMedium" title="Iata di destinazione">(DESTINAZIONE) IATA Code: {{ routeSelected.destIata }} - Citta': {{ routeSelected.destCity }}</div>
+            <div id="airtimeRoute" class="textMedium" title="Tempo di volo">Tempo di volo medio: {{ routeSelected.airTime }}</div>
+            <div id="distanceRoute" class="textMedium" title="Distanza in miglia">Distanza in miglia: {{ routeSelected.distanceMiles }} - Distanza in chilometri: {{ routeSelected.distanceKm }}</div>    
+            <h3>Compagnie che servono la rotta:</h3>
+            
+            <select id="selectCarrier" ng-init="currentCarrier = options[0]" ng-model="currentCarrier" ng-change="showInfoCarrier()" class="button">
+                <option ng-repeat="carrier in routeSelected.workingCarrier">
+                    {{ carrier.UniqueCarrier }}
+                </option>
+            </select>
+            <br><br>
+            <div id="carrierDetails"></div>
+            <br><br>
+        </div>
+        <div id="infoCarrierDelays" style="display: none">
+            <div id="graphCountDelaysDep" class="graph graphCountDelaysDep" title="Grafico informativo" style="height:300px;"></div>
+            <div id="graphCountDelaysArr" class="graph graphCountDelaysArr" title="Grafico informativo" style="height:300px;"></div>
+        </div>
+        
+        <div id="infoAirport" class="tableInfo" title="Informazioni sull'aereoporto cliccato" ng-show="showElements.tableDetailsAirport">
+            <div id="iataAirport" class="textLarge" title="Iata aeroporto">{{ airportSelected.iata }}</div>
+            <div id="cityAirport" class="textMedium" title="Citta' aeroporto">{{ airportSelected.city }}</div>
+            
+            <h4>Lista delle destinazioni dall'aeroporto corrente:</h4>
+            <select class="button">
+                <option ng-repeat="airport in airportSelected.airportReached">
+                    IATA Code: {{ airport.iata }} - Citta': {{ airport.city }}
+                </option>
+            </select>
+            <br>
+            <h4>Ritardo medio per l'aeroporto sui voli in partenza: {{ airportSelected.airportInfoGraphs[0].meanDelayDep }}<br>Ritardo medio per l'aeroporto sui voli in arrivo: {{ airportSelected.airportInfoGraphs[0].meanDelayArr }}</h4>
+            <br>
+            <h4>Grafici sui ritardi relativi all'aeroporto di {{ airportSelected.city }} considerando tutte le compagnie:</h4>
+        </div>
+        <div id="infoAirportDelays" style="display: none">
+            <div id="graphAirportDelaysDep" class="graph graphAirportDelaysDep" title="Grafico informativo" style="height:300px;"></div>
+            <div id="graphAirportDelaysArr" class="graph graphAirportDelaysArr" title="Grafico informativo" style="height:300px;"></div>
+        </div>
+        
+        <div id="infoCarrier" style="display: none">
+            <div id="graphMeans" class="graph graphMeans" title="Grafico informativo" style="height:300px;"></div>
+            <div id="graphCount" class="graph graphCount" title="Grafico informativo" style="height:300px;"></div>
+        </div>
+    </div>
+</body>
+</html>
