@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html ng-app="predictionsApp">
 <head>
   <title>Sezione predizioni</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
+  <script type="text/javascript" src="js/predictions.js"></script>
 </head>
 <body>
 
@@ -22,10 +24,71 @@
     </ul>
   </div>
 </nav>
-    
-<div class="container">
-  <h3>Predizioni</h3>
-  <p>Under construction</p>
+
+<div ng-controller="controllerPredictions">
+    <div class="container">
+    <h4>In questa sezione potrai predirre un ritardo futuro di un volo.</h4>
+    <br><br>
+    <h5>Seleziona la compagnia aerea:</h5>
+    <div id="selectCarrier">
+        <select id="selectCarrier" ng-init="currentCarrier = options[0]" ng-model="currentCarrier" ng-change="showOrigin()" class="button">
+                <option ng-repeat="carrier in allCarriers">
+                    {{ carrier }}
+                </option>
+        </select>    
+    </div>
+    <br>
+    <div id="selectOrigin" style="display: none">
+        <h5>Seleziona una partenza disponibile con {{ currentCarrier }}:</h5>
+        <select id="selectOrigin" ng-init="currentOrigin = options[0]" ng-model="currentOrigin" ng-change="showDest()" class="button">
+                <option ng-repeat="origin in allOriginByCarrier">
+                    {{ origin }}
+                </option>
+        </select>   
+    </div>
+    <br><br>
+    <div id="selectDest" style="display: none">
+        <h5>Seleziona una destinazione disponibile con {{ currentCarrier }} in partenza da {{ currentOrigin }}:</h5>
+        <select id="selectDest" ng-init="currentDest = options[0]" ng-model="currentDest" ng-change="showDate()" class="button">
+                <option ng-repeat="dest in allDestByOrigin">
+                    {{ dest }}
+                </option>
+        </select>   
+    </div>
+    <br><br>
+    <div id="selectDate" style="display: none; color: black; font-weight: bold" align= "center" class="button dateDiv">
+        <h5>Data del volo da predirre:</h5> 
+            <form id="dateSelect" title="Seleziona la data" ng-submit="showTime()">
+                <input id="dateSelected" type="date" class="button"/>
+                <input type="submit" id="dateSelectSubmit" class="button" value="Conferma"/>
+            </form>
+    </div>
+    <br><br>
+    <div id="selectTimeOrigin" style="display: none; color: black; font-weight: bold" align= "center" class="button timeDiv">
+        <h5>Orario di partenza del volo da predirre (Ore:minuti - esempio: '06:28'):</h5> 
+            <form id="timeOriginSelect" title="Inserisci l'orario di partenza" ng-submit="showTimeDest()">
+                <input id="timeOriginSelected" type="text" class="button"/>
+                <input type="submit" id="timeOriginSelectSubmit" class="button" value="Conferma"/>
+            </form>
+    </div>
+    <br><br>
+    <div id="selectTimeDest" style="display: none; color: black; font-weight: bold" align= "center" class="button timeDiv">
+        <h5>Orario di arrivo del volo da predirre (Ore:minuti - esempio: '06:28'):</h5> 
+            <form id="timeDestSelect" title="Inserisci l'orario di arrivo" ng-submit="validateLast()">
+                <input id="timeDestSelected" type="text" class="button"/>
+                <input type="submit" id="timeDestSelectSubmit" class="button" value="Conferma"/>
+            </form>
+    </div>
+    <br><br>
+        <div id="result" style="display: none">
+            <h3>Predizione in caricamento..</h3>
+            <br>
+            <h5>(Dati da inviare al server) Compagnia Aerea: {{ uniqueCarrier }} - Citta' d'origine: 
+            {{ currentOrigin }} - Città destinazione: {{ currentDest }} <br> Data da predirre: 
+            {{ dateToPredict }} - Orario partenza: {{ originTime }} - Orario d'arrivo: {{ destTime }}<br><br></h5>
+        </div>   
+        
+    </div>
 </div>
 
 </body>

@@ -88,7 +88,7 @@ app.get('/getroutes', function(req, res, next) {
     });
 });
 
-// get all routes about a specific origin via Rest API
+// get all routes about a specific origin and dest via Rest API
 app.get('/getrouteinfo', function(req, res, next) {
 	var originIata = req.query.origin;
 	var destIata = req.query.dest;
@@ -154,6 +154,56 @@ app.get('/getroutesorigindistinct/:origin', function(req, res, next) {
         res.json(routes); // return all routes about a specific origin in JSON format
     });
     }
+});
+
+// get all routes about a specific air carrier via Rest API
+app.get('/getroutescarrier/:carrier', function(req, res, next) {
+	var carrier = req.params.carrier;
+	var dateFilter = req.query.month;
+    // use mongoose to get all routes about a specific air carrier in the database
+    if(dateFilter == null || dateFilter == ""){
+    	allRoutes.find({'UniqueCarrier': carrier}, function(err, routes) {
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if (err)
+            	res.send(err)
+            
+            res.json(routes); // return all routes about a specific air carrier in JSON format
+        });
+    }else{
+    	dateFilter = dateFilter+"-15";
+    	allRoutes.find({$and: [{FlightDateMax: { $gte: dateFilter}}, {FlightDateMin: { $lte: dateFilter}},{'UniqueCarrier': carrier}]}, function(err, routes) {
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if (err)
+            	res.send(err)
+            
+            res.json(routes); // return all routes about a specific air carrier in JSON format
+        });
+    }
+});
+
+// FOR PREDICTIONS: get all Origin City about a specific air carrier via Rest API
+app.get('/getoriginscarrier/:carrier', function(req, res, next) {
+	var carrier = req.params.carrier;
+    	allRoutes.find({'UniqueCarrier': carrier}, {'OriginCity': 1}, function(err, result) { 
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if (err)
+            	res.send(err)
+            
+            res.json(result); // return all routes about a specific air carrier in JSON format
+        });
+});
+
+// FOR PREDICTIONS: get all Dest City about a specific air carrier and specific Origin City via Rest API
+app.get('/getdestscarrier/:carrier', function(req, res, next) {
+	var carrier = req.params.carrier;
+    var origin = req.query.origin;
+    	allRoutes.find({'UniqueCarrier': carrier, 'OriginCity': origin},{DestCity: 1}, function(err, result) { 
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if (err)
+            	res.send(err)
+            
+            res.json(result); // return all routes about a specific air carrier in JSON format
+        });
 });
 
 // get all routes about a specific air carrier via Rest API
