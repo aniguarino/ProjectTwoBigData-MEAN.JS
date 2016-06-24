@@ -1,4 +1,5 @@
 var expressServer = "http://localhost:8083";
+var predictionServer = "http://localhost:8080";
 //Angular App Module and Controller
 var sampleApp = angular.module('predictionsApp', []);
 
@@ -11,6 +12,15 @@ sampleApp.controller('controllerPredictions', function ($scope, $http) {
     $scope.dateToPredict = "";
     $scope.originTime = "";
     $scope.destTime = "";
+    $scope.result = {
+    	carrierName: "",
+        origin: "",
+        dest: "",
+        date: "",
+        originTime: "",
+        destTime: "",
+        prediction: ""
+    }
     
     // when landing on the page, get all air companies
     $http.get(expressServer+'/getallcarrier')
@@ -129,7 +139,22 @@ sampleApp.controller('controllerPredictions', function ($scope, $http) {
             if(parts[1].length == 2 && parts[1]> 0 && parts[1]<60){
                 $scope.destTime = timeDest;
                 window.setTimeout(function() {
-                   document.getElementById('result').style.display = "inline"; 
+                    //call prediction server
+                    $http.get(predictionServer+'/server/prediction?uniqueCarrier='+$scope.uniqueCarrier+'&currentOrigin='+$scope.currentOrigin.trim()+'&currentDest='+$scope.currentDest.trim()+'&dateToPredict='+$scope.dateToPredict+'&originTime='+$scope.originTime+'&destTime='+$scope.destTime)
+                        .success(function(data) {
+                        $scope.result.carrierName = getNameCarrier(data.uniqueCarrier);
+                        $scope.result.origin = data.currentOrigin;
+                        $scope.result.dest = data.currentDest;
+                        $scope.result.date = data.dateToPredict;
+                        $scope.result.originTime = data.originTime;
+                        $scope.result.destTime = data.destTime;
+                        $scope.result.prediction = data.prediction;
+                        document.getElementById('result').style.display = "inline";
+                    })
+                    .error(function(data) {
+                       console.log('Error: ' + data);
+                       alert("Predizione fallita! Problemi con il server "+predictionServer); 
+                    });    
                 }, 100);
             }else
                 alert("Attenzione! Il formato inserito non e' corretto. Reinserisci l'orario!");
