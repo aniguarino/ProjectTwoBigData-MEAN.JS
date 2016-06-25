@@ -19,3 +19,4 @@ sudo node server-side.js (ogni chiamata GET si vedrà in console)
 
 Ora l’index.html risponderà correttamente..
 
+Nota: per far funzionare il PredictionServer va avviato separatamente con java -jar PredictionServer-X.jar
