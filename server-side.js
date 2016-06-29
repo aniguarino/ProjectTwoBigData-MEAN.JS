@@ -184,7 +184,7 @@ app.get('/getroutescarrier/:carrier', function(req, res, next) {
 // FOR PREDICTIONS: get all Origin City about a specific air carrier via Rest API
 app.get('/getoriginscarrier/:carrier', function(req, res, next) {
 	var carrier = req.params.carrier;
-    	allRoutes.find({'UniqueCarrier': carrier}, {'OriginCity': 1}, function(err, result) { 
+    	allRoutes.find({'UniqueCarrier': carrier}, {'OriginIata': 1, 'OriginCity': 1}, function(err, result) { 
             // if there is an error retrieving, send the error. nothing after res.send(err) will execute
             if (err)
             	res.send(err)
@@ -197,7 +197,7 @@ app.get('/getoriginscarrier/:carrier', function(req, res, next) {
 app.get('/getdestscarrier/:carrier', function(req, res, next) {
 	var carrier = req.params.carrier;
     var origin = req.query.origin;
-    	allRoutes.find({'UniqueCarrier': carrier, 'OriginCity': origin},{DestCity: 1}, function(err, result) { 
+    	allRoutes.find({'UniqueCarrier': carrier, 'OriginCity': origin}, {'DestIata': 1, 'DestCity': 1}, function(err, result) { 
             // if there is an error retrieving, send the error. nothing after res.send(err) will execute
             if (err)
             	res.send(err)

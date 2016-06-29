@@ -81,8 +81,11 @@
             </form>
     </div>
     <br><br>
+        <div id="wait" style="display: none" align="center">
+            <h4><b>In caricamento...</b></h4>
+        </div>
         <div id="result" style="display: none" align="center">
-            <h4><b>Prediction Server raggiunto... Analisi in corso...</b></h4>
+            <h4><b>Prediction Server raggiunto... Risultati:</b></h4>
             <table border="1" style="width:50%" align="center">
               <tr>
                 <td align="center"><h4>Compagnia:</h4></td>
@@ -111,6 +114,22 @@
               <tr>
                 <td align="center"><h3 style="color:red">Predizione</h3></td>
                 <td align="center"><h3>{{ result.prediction }}</h3></td>
+              </tr>
+              <tr>
+                <td align="center"><h3 style="color:red">Probabilità nessun ritardo</h3></td>
+                <td align="center"><h3>{{ result.prob0 }}</h3></td>
+              </tr>
+              <tr>
+                <td align="center"><h3 style="color:red">Probabilità ritardo entro 20 min</h3></td>
+                <td align="center"><h3>{{ result.prob0_20 }}</h3></td>
+              </tr>
+              <tr>
+                <td align="center"><h3 style="color:red">Probabilità ritardo tra 20 e 90 min</h3></td>
+                <td align="center"><h3>{{ result.prob20_90 }}</h3></td>
+              </tr>
+              <tr>
+                <td align="center"><h3 style="color:red">Probabilità ritardo oltre 90 min</h3></td>
+                <td align="center"><h3>{{ result.prob90plus }}</h3></td>
               </tr>
             </table>
             <br><br>

@@ -6,6 +6,8 @@ var sampleApp = angular.module('predictionsApp', []);
 sampleApp.controller('controllerPredictions', function ($scope, $http) {
     
     $scope.uniqueCarrier = "";
+    $scope.originIata = "";
+    $scope.destIata = "";
     $scope.allCarriers = [];
     $scope.allOriginByCarrier = [];
     $scope.allDestByOrigin = [];
@@ -19,7 +21,11 @@ sampleApp.controller('controllerPredictions', function ($scope, $http) {
         date: "",
         originTime: "",
         destTime: "",
-        prediction: ""
+        prediction: "",
+        prob0: "",
+        prob0_20: "",
+        prob20_90: "",
+        prob90plus: ""
     }
     
     // when landing on the page, get all air companies
@@ -41,6 +47,7 @@ sampleApp.controller('controllerPredictions', function ($scope, $http) {
         document.getElementById('selectDate').style.display = "none";
         document.getElementById('selectTimeOrigin').style.display = "none";
         document.getElementById('selectTimeDest').style.display = "none";
+        document.getElementById('wait').style.display = "none"; 
         document.getElementById('result').style.display = "none"; 
         //*****
         
@@ -51,7 +58,7 @@ sampleApp.controller('controllerPredictions', function ($scope, $http) {
         .success(function(data) {
             var dat = [];
             for(var i=0; i<data.length; i++)
-                dat[i] = data[i].OriginCity;
+                dat[i] = data[i].OriginCity + " ("+data[i].OriginIata+")";
             
             var unique=dat.filter(function(itm,i,dat){
                  return i==dat.indexOf(itm);
@@ -67,12 +74,18 @@ sampleApp.controller('controllerPredictions', function ($scope, $http) {
     
     $scope.showDest = function() {
         document.getElementById('selectDest').style.display = "inline";
-                
-        $http.get(expressServer+'/getdestscarrier/'+ $scope.uniqueCarrier + '?origin=' + $scope.currentOrigin.trim())
+        
+        //take only name for execute the query
+        var parts = $scope.currentOrigin.trim().split(" (");
+        var currentOriginName = parts[0];
+        
+        $scope.originIata = parts[1].substring(0, parts[1].length-1);
+        
+        $http.get(expressServer+'/getdestscarrier/'+ $scope.uniqueCarrier + '?origin=' + currentOriginName)
         .success(function(data) {
             var dat = [];
             for(var i=0; i<data.length; i++)
-                dat[i] = data[i].DestCity;
+                dat[i] = data[i].DestCity + " ("+data[i].DestIata+")";
             
             var unique=dat.filter(function(itm,i,dat){
                  return i==dat.indexOf(itm);
@@ -88,6 +101,8 @@ sampleApp.controller('controllerPredictions', function ($scope, $http) {
     
     $scope.showDate = function() {
         document.getElementById('selectDate').style.display = "inline";
+        var parts = $scope.currentDest.trim().split(" (");
+        $scope.destIata = parts[1].substring(0, parts[1].length-1);
     }
     
      $scope.showTime = function() {
@@ -120,7 +135,7 @@ sampleApp.controller('controllerPredictions', function ($scope, $http) {
         //validate timeOrigin
         var parts = timeOrigin.split(":");
         if(parts[0].length == 2 && parts[0]> 0 && parts[0]<24){
-            if(parts[1].length == 2 && parts[1]> 0 && parts[1]<60){
+            if(parts[1].length == 2 && parts[1]>= 0 && parts[1]<60){
                 $scope.originTime = timeOrigin;
                 document.getElementById('selectTimeDest').style.display = "inline";
             }else
@@ -132,23 +147,37 @@ sampleApp.controller('controllerPredictions', function ($scope, $http) {
      
     $scope.validateLast = function() {
         var timeDest = document.getElementById('timeDestSelected').value;
-         
-        //validate timeOrigin
+        document.getElementById('wait').style.display = "inline";
+        
+        //validate timeDest
         var parts = timeDest.split(":");
         if(parts[0].length == 2 && parts[0]> 0 && parts[0]<24){
-            if(parts[1].length == 2 && parts[1]> 0 && parts[1]<60){
+            if(parts[1].length == 2 && parts[1]>= 0 && parts[1]<60){
                 $scope.destTime = timeDest;
                 window.setTimeout(function() {
                     //call prediction server
-                    $http.get(predictionServer+'/server/prediction?uniqueCarrier='+$scope.uniqueCarrier+'&currentOrigin='+$scope.currentOrigin.trim()+'&currentDest='+$scope.currentDest.trim()+'&dateToPredict='+$scope.dateToPredict+'&originTime='+$scope.originTime+'&destTime='+$scope.destTime)
+                    $http.get(predictionServer+'/server/prediction?uniqueCarrier='+$scope.uniqueCarrier+'&currentOrigin='+$scope.originIata+'&currentDest='+$scope.destIata+'&dateToPredict='+$scope.dateToPredict+'&originTime='+$scope.originTime+'&destTime='+$scope.destTime)
                         .success(function(data) {
                         $scope.result.carrierName = getNameCarrier(data.uniqueCarrier);
-                        $scope.result.origin = data.currentOrigin;
-                        $scope.result.dest = data.currentDest;
+                        $scope.result.origin = data.origin;
+                        $scope.result.dest = data.dest;
                         $scope.result.date = data.dateToPredict;
                         $scope.result.originTime = data.originTime;
                         $scope.result.destTime = data.destTime;
-                        $scope.result.prediction = data.prediction;
+                        if(data.prediction == 0)
+                            $scope.result.prediction = "In orario";
+                        else
+                            $scope.result.prediction = "In ritardo";
+                        
+                        if(data.prob0 == 0)
+                            $scope.result.prob0 = "/";
+                        else
+                            $scope.result.prob0 = (data.prob0).toFixed(5) + " %";
+                        
+                        $scope.result.prob0_20 = (data.prob0_20).toFixed(5) + " %";
+                        $scope.result.prob20_90 = (data.prob20_90).toFixed(5) + " %";
+                        $scope.result.prob90plus = (data.prob90plus).toFixed(5) + " %";
+                        document.getElementById('wait').style.display = "none";
                         document.getElementById('result').style.display = "inline";
                     })
                     .error(function(data) {
