@@ -182,7 +182,8 @@ sampleApp.controller('controllerPredictions', function ($scope, $http) {
                     })
                     .error(function(data) {
                        console.log('Error: ' + data);
-                       alert("Predizione fallita! Problemi con il server "+predictionServer); 
+                       alert("Predizione fallita! Problemi con il server "+predictionServer);
+                       document.getElementById('wait').style.display = "none";
                     });    
                 }, 100);
             }else
