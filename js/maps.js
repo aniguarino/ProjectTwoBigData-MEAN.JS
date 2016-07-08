@@ -385,6 +385,7 @@
 
     function initMap($scope, $http, data) {
     	$scope.carrierClicked = null;
+        $scope.carrierClickedButton = null;
     	$scope.monthFilter = "";
     	$scope.markerClicked = null;
     	$scope.lastMarkerOver = "";
@@ -703,7 +704,7 @@
                     {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].weatherDelayDep).toFixed(4), legendText:"Meteo", label: "Meteo" },
                     {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].nasDelayDep).toFixed(4), legendText:"Aviazione nazionale", label: "Aviazione nazionale" },
                     {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].securityDelayDep).toFixed(4), legendText:"Sicurezza" , label: "Sicurezza"},
-                    {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].lateAircraftDelayDep).toFixed(4), legendText:"Voli" , label: "Voli"}
+                    {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].lateAircraftDelayDep).toFixed(4), legendText:"Veivolo" , label: "Veivolo"}
                 ]
             }
             ]
@@ -738,7 +739,7 @@
                     {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].weatherDelayArr).toFixed(4), legendText:"Meteo", label: "Meteo" },
                     {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].nasDelayArr).toFixed(4), legendText:"Aviazione nazionale", label: "Aviazione nazionale" },
                     {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].securityDelayArr).toFixed(4), legendText:"Sicurezza" , label: "Sicurezza"},
-                    {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].lateAircraftDelayArr).toFixed(4), legendText:"Voli" , label: "Voli"}
+                    {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].lateAircraftDelayArr).toFixed(4), legendText:"Veivolo" , label: "Veivolo"}
                 ]
             }
             ]
@@ -792,10 +793,25 @@
     		var text = sortedData[i];
 
     		controlText.addEventListener('click', function() {
+                if($scope.carrierClicked != null && $scope.carrierClicked != this.prop){
+                    $scope.carrierClickedButton.style.color = "black";
+                    $scope.carrierClickedButton.style.fontWeight = "normal";
+                    removeAllLines($scope);
+                    setMarkersOpacity($scope, 1);
+                    document.getElementById('infoRoute').style.display = "none";
+                    document.getElementById('infoCarrierDelays').style.display = "none";
+                    document.getElementById('errorDelays').style.display = "none";
+                    document.getElementById("infoCarrier").style.display = "none";
+                    document.getElementById('infoGhostFlights').style.display = "none";
+                    document.getElementById('otherInfoCarrierDelays').style.display = "none";
+                    $scope.carrierClicked = null;
+                    $scope.carrierClickedButton = null;
+                }
     			if($scope.markerClicked === null){
     				$scope.showElements.tableDetailsAirport = false;
     				if(this.style.color === "black"){
     					$scope.carrierClicked = this.prop;
+                        $scope.carrierClickedButton = this;
 
     					resetStyleControls($scope);
 
@@ -804,6 +820,7 @@
     					$scope.onCarrierClick(this.prop);
     				}else{
     					$scope.carrierClicked = null;
+                        $scope.carrierClickedButton = null;
     					this.style.color = "black";
     					this.style.fontWeight = "normal";
     					removeAllLines($scope);
@@ -1226,23 +1243,27 @@
 
     function createGraphGhostFlights($scope, carrierCode, data){
         
-        var points = [];
-        var datas = [];
-        
-        for(var i=0; i<data.length; i++)
-            points.push({x: new Date(data[i].Year, parseInt(data[i].Month), 1), y: parseFloat(data[i].GhostFlightPercent.substring(0,5)), countGhost: data[i].CountGhostFlight, countAll: data[i].CountAllFlight});
+        if(data.length != 0){
+            var points = [];
+            var datas = [];
+            
+            for(var i=0; i<data.length; i++)
+                points.push({x: new Date(data[i].Year, parseInt(data[i].Month), 1), y: parseFloat(data[i].GhostFlightPercent.substring(0,5)), countGhost: data[i].CountGhostFlight, countAll: data[i].CountAllFlight});
 
-        datas.push({type: "spline", toolTipContent: "Voli fantasma: {countGhost}</br>Voli totali: {countAll}</br>Percentuale: {y}%", dataPoints: points});
-        
-        var chart = new CanvasJS.Chart("graphGhostFlightsCarrier",
-        {
-          title:{
-          text: "Voli fantasma per "+getNameCarrier(data[0].UniqueCarrier)
-          },
-           data: datas
-        });
+            datas.push({type: "spline", toolTipContent: "Voli fantasma: {countGhost}</br>Voli totali: {countAll}</br>Percentuale: {y}%", dataPoints: points});
+            
+            var chart = new CanvasJS.Chart("graphGhostFlightsCarrier",
+            {
+              title:{
+              text: "Voli fantasma per "+getNameCarrier(data[0].UniqueCarrier)
+              },
+               data: datas
+            });
 
-        chart.render();
+            chart.render();
+        }else{
+            document.getElementById('infoGhostFlights').style.display = "none";
+        }
     }
 
     function createGraphOtherCarrierDelays($scope, carrierCode, data){
@@ -1274,7 +1295,7 @@
                     {  y: (data[0].WeatherDelayPercent).toFixed(4), legendText:"Meteo", label: "Meteo" },
                     {  y: (data[0].NASDelayPercent).toFixed(4), legendText:"Aviazione nazionale", label: "Aviazione nazionale" },
                     {  y: (data[0].SecurityDelayPercent).toFixed(4), legendText:"Sicurezza" , label: "Sicurezza"},
-                    {  y: (data[0].LateAircraftDelayPercent).toFixed(4), legendText:"Voli" , label: "Voli"}
+                    {  y: (data[0].LateAircraftDelayPercent).toFixed(4), legendText:"Veivolo" , label: "Veivolo"}
                 ]
             }
             ]
