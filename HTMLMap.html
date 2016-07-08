@@ -21,7 +21,7 @@
     <nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a class="navbar-brand">Nome Provvisorio</a>
+                <a class="navbar-brand">USA Flights</a>
             </div>
                 <ul class="nav navbar-nav">
                 <li class="active"><a href="index.html">Home</a></li>
@@ -32,6 +32,10 @@
     </nav>
     
     <div ng-controller="controllerMap">
+        <div class="container">
+            <h4>In questa sezione potrai interagire con i voli USA visibili in mappa e visionare grafici informativi.</h4>
+            <h5>I dati utilizzati riguardano compagnie aeree nazionali a partire dal 2000 fino al primo trimestre del 2016</h5>
+        </div>
         <div id="bigMap" class="bigMap">
             <div id="googleMaps" align="center"></div>
             <div id="selectMonth" style="display: none; color: black; font-weight: bold" align= "center" class="button dateDiv">
@@ -48,7 +52,10 @@
             </div>
         </div>
         <div id="infoGhostFlights" style="display: none">
-            <div id="graphGhostFlightsCarrier" class="graph graphGhostFlightsCarrier" title="Grafico informativo" style="height:300px;"></div>
+            <div id="graphGhostFlightsCarrier" class="graph graphGhostFlightsCarrier" title="Sono voli, operati senza passeggeri, effettuati per trasferire il veivolo dall'aeroporto di arrivo all'aeroporto di partenza dei successivi voli con passeggeri. Le spese di questi voli sono una perdita, ma servono a sopperire problemi logistici." style="height:300px;"></div>
+        </div>
+        <div id="otherInfoCarrierDelays" style="display: none">
+            <div id="graphOtherCarrierDelays" class="graph graphOtherCarrierDelays" title="Grafico informativo" style="height:300px;"></div>
         </div>
         <div id="infoRoute" class="text tableInfo" title="Informazioni sulla rotta cliccata" ng-show="showElements.tableDetailsAirport">
             <div id="RouteOrigin" class="textMedium" title="Iata d'origine">(ORIGINE) IATA Code: {{ routeSelected.originIata }} - Citta': {{ routeSelected.originCity }}</div>
@@ -70,7 +77,6 @@
             <div id="graphCountDelaysDep" class="graph graphCountDelaysDep" title="Grafico informativo" style="height:300px;"></div>
             <div id="graphCountDelaysArr" class="graph graphCountDelaysArr" title="Grafico informativo" style="height:300px;"></div>
         </div>
-        
         <div id="infoAirport" class="tableInfo" title="Informazioni sull'aereoporto cliccato" ng-show="showElements.tableDetailsAirport">
             <div id="iataAirport" class="textLarge" title="Iata aeroporto">{{ airportSelected.iata }}</div>
             <div id="cityAirport" class="textMedium" title="Citta' aeroporto">{{ airportSelected.city }}</div>
@@ -84,11 +90,15 @@
             <br>
             <h4>Ritardo medio per l'aeroporto sui voli in partenza: {{ airportSelected.airportInfoGraphs[0].meanDelayDep }}<br>Ritardo medio per l'aeroporto sui voli in arrivo: {{ airportSelected.airportInfoGraphs[0].meanDelayArr }}</h4>
             <br>
-            <h4>Grafici sui ritardi relativi all'aeroporto di {{ airportSelected.city }} considerando tutte le compagnie:</h4>
+            <h4>Grafici informativi per l'aeroporto di {{ airportSelected.city }} considerando tutte le compagnie:</h4>
         </div>
         <div id="infoAirportDelays" style="display: none">
             <div id="graphAirportDelaysDep" class="graph graphAirportDelaysDep" title="Grafico informativo" style="height:300px;"></div>
             <div id="graphAirportDelaysArr" class="graph graphAirportDelaysArr" title="Grafico informativo" style="height:300px;"></div>
+        </div>
+        <div id="infoOtherAirportDelays" style="display: none">
+            <div id="graphOtherAirportDelaysDep" class="graph graphOtherAirportDelaysDep" title="Grafico informativo" style="height:300px;"></div>
+            <div id="graphOtherAirportDelaysArr" class="graph graphOtherAirportDelaysArr" title="Grafico informativo" style="height:300px;"></div>
         </div>
         
         <div id="infoCarrier" style="display: none">
@@ -96,5 +106,6 @@
             <div id="graphCount" class="graph graphCount" title="Grafico informativo" style="height:300px;"></div>
         </div>
     </div>
+    <div id="errorDelays" class="textSmall" title="Info di servizio" style="display: none">Nota: I dati sui ritardi sono disponibili solo da Ottobre 2008 in poi</div>
 </body>
 </html>

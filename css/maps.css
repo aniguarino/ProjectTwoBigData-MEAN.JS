@@ -166,13 +166,13 @@
     position: relative;
     left: 8%;
 }
-.graphMeans, .graphAirportDelaysDep {
+.graphMeans, .graphAirportDelaysDep, .graphOtherAirportDelaysDep {
 	float: left;
     width: 25%;
     margin-bottom: 4%;
     margin-left: 7%;
 }
-.graphCount, .graphAirportDelaysArr {
+.graphCount, .graphAirportDelaysArr, .graphOtherAirportDelaysArr {
     float: right;
     width: 55%;
     margin-bottom: 4%;
@@ -191,6 +191,12 @@
     margin-right: 12%;
 }
 .graphGhostFlightsCarrier {
+    float: left;
+    width: 50%;
+    margin-bottom: 4%;
+    margin-left: 25%;
+}
+.graphOtherCarrierDelays {
     float: left;
     width: 50%;
     margin-bottom: 4%;

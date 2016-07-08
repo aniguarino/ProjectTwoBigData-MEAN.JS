@@ -1,5 +1,5 @@
 var expressServer = "http://localhost:8083";
-var predictionServer = "http://localhost:8080";
+var predictionServer = "http://184.72.169.1:8080";
 //Angular App Module and Controller
 var sampleApp = angular.module('predictionsApp', []);
 
@@ -240,6 +240,20 @@ function getNameCarrier(carrierCode){
     		return "Eastern Air Lines";
     	if(carrierCode == "CO")
     		return "Continental Air Lines";
+        if(carrierCode == "YV")
+            return "Mesa Airlines";
+        if(carrierCode == "9E")
+            return "Endeavor Air";
+        if(carrierCode == "OH")
+            return "US Airways Express";
+        if(carrierCode == "DH")
+            return "Discovery Airways";
+        if(carrierCode == "XE")
+            return "Express Jet";
+        if(carrierCode == "TZ")
+            return "ATA Airlines";
+        if(carrierCode == "KH")
+            return "Aloha Airlines"
 
     	return carrierCode;
 }

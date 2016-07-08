@@ -32,15 +32,15 @@ var allRoutesDistinct = mongoose.model('distinctroutes', {
 	text : String
 });
 
-var allCompanies = mongoose.model('aircompanies', {
-	text : String
-});
-
 var statsCarrier = mongoose.model('stats', {
 	text : String
 });
 
 var ghostFlights = mongoose.model('ghostflights', {
+	text : String
+});
+
+var carrierDelay = mongoose.model('carrierproblems', {
 	text : String
 });
 
@@ -52,16 +52,15 @@ console.log("Server avviato sulla porta: "+port);
 module.exports = allMarkers;
 module.exports = allRoutes;
 module.exports = allRoutesDistinct;
-module.exports = allCompanies;
 module.exports = statsCarrier;
 module.exports = ghostFlights;
+module.exports = carrierDelay;
 
 app.use(function(req, res, next) {
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 	next();
 });
-
 
 
 // get all markers via Rest API
@@ -255,19 +254,6 @@ app.get('/getallcarrier', function(req, res, next) {
     }
 });
 
-// get name about an air company via Rest API
-app.get('/getnamecarrier/:code', function(req, res, next) {
-	var code = req.params.code;
-    // use mongoose to get about an air company in the database
-    allCompanies.find({'Code': code},{Description:1}, function(err, carrier) {
-        // if there is an error retrieving, send the error. nothing after res.send(err) will execute
-        if (err)
-        	res.send(err)
-
-        res.json(carrier); // return about an air company in JSON format
-    });
-});
-
 // get all air carrier about routes from one marker via Rest API
 app.get('/getcarrierorigin/:origin', function(req, res, next) {
 	var origin = req.params.origin;
@@ -351,4 +337,17 @@ app.get('/getghostflights/:carrier', function(req, res, next) {
             res.json(ghostflights); // return JSON format
         });
     }
+});
+
+// get all delays about a specific air carrier via Rest API
+app.get('/getcarrierdelay/:carrier', function(req, res, next) {
+	var carrier = req.params.carrier;
+    // use mongoose to get all delays about a specific air carrier in the database
+    	carrierDelay.find({'UniqueCarrier': carrier}, function(err, delays) {
+            // if there is an error retrieving, send the error. nothing after res.send(err) will execute
+            if (err)
+            	res.send(err)
+            
+            res.json(delays); // return all delays about a specific air carrier in JSON format
+        });  
 });

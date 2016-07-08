@@ -22,7 +22,8 @@
     	iata: "",
     	city: "",
     	airportReached: [],
-        airportInfoGraphs: []
+        airportInfoGraphs: [],
+        airportOtherInfoGraphs: []
     }
 
     $scope.routeSelected = {
@@ -40,6 +41,7 @@
     	var month = document.getElementById('monthFilter').value;
     	$scope.monthFilter = month;
         document.getElementById('infoGhostFlights').style.display = "none";
+        document.getElementById('otherInfoCarrierDelays').style.display = "none";
         
     	if(month != ""){
     		document.getElementById('labelfilter').style.display = "inline";
@@ -74,24 +76,24 @@
 
     	if(document.getElementById('allcarrier') != null)
     		document.getElementById('allcarrier').remove();
-    	window.setTimeout(function() {
+    	//window.setTimeout(function() {
             allCarriers($scope, $http); //reset allCarrier without filtering
-        }, 20);
+        //}, 20);
 
+        window.setTimeout(function() {
     	if($scope.carrierClicked != null){
-    		window.setTimeout(function() {
     			if(document.getElementById('carrierText'+$scope.carrierClicked) != null){
     				document.getElementById('carrierText'+$scope.carrierClicked).style.color = "green";
     				document.getElementById('carrierText'+$scope.carrierClicked).style.fontWeight = "bolder";
     			}
-    		}, 100);
     		$scope.onCarrierClick($scope.carrierClicked);
     	}
+        }, 100);
 
     	if($scope.markerClicked != null){
     		window.setTimeout(function() {
     			$scope.onMarkerOver($scope, $scope.markerClicked.iata);
-    		}, 100); 
+    		}, 120); 
     	}
 
     	document.getElementById('labelfilter').style.display = "none";
@@ -120,6 +122,9 @@
                 
                 $scope.airportSelected.airportInfoGraphs = [];      
                 $scope.airportSelected.airportInfoGraphs.push({meanDelayDep: $scope.markers[data[0].OriginIata].meanDelayDep, meanDelayArr: $scope.markers[data[0].OriginIata].meanDelayArr, countDelayDep0: $scope.markers[data[0].OriginIata].countDelayDep0, countDelayDep15: $scope.markers[data[0].OriginIata].countDelayDep15, countDelayDep60: $scope.markers[data[0].OriginIata].countDelayDep60, countDelayDep3h: $scope.markers[data[0].OriginIata].countDelayDep3h, countDelayDep24h: $scope.markers[data[0].OriginIata].countDelayDep24h, countDelayDepOther: $scope.markers[data[0].OriginIata].countDelayDepOther, countDelayArr0: $scope.markers[data[0].OriginIata].countDelayArr0, countDelayArr15: $scope.markers[data[0].OriginIata].countDelayArr15, countDelayArr60: $scope.markers[data[0].OriginIata].countDelayArr60, countDelayArr3h: $scope.markers[data[0].OriginIata].countDelayArr3h, countDelayArr24h: $scope.markers[data[0].OriginIata].countDelayArr24h, countDelayArrOther: $scope.markers[data[0].OriginIata].countDelayArrOther});
+                
+                $scope.airportSelected.airportOtherInfoGraphs = [];      
+                $scope.airportSelected.airportOtherInfoGraphs.push({carrierDelayDep: $scope.markers[data[0].OriginIata].carrierDelayDep, weatherDelayDep: $scope.markers[data[0].OriginIata].weatherDelayDep, nasDelayDep: $scope.markers[data[0].OriginIata].nasDelayDep, securityDelayDep: $scope.markers[data[0].OriginIata].securityDelayDep, lateAircraftDelayDep: $scope.markers[data[0].OriginIata].lateAircraftDelayDep, carrierDelayArr: $scope.markers[data[0].OriginIata].carrierDelayArr, weatherDelayArr: $scope.markers[data[0].OriginIata].weatherDelayArr, nasDelayArr: $scope.markers[data[0].OriginIata].nasDelayArr, securityDelayArr: $scope.markers[data[0].OriginIata].securityDelayArr, lateAircraftDelayArr: $scope.markers[data[0].OriginIata].lateAircraftDelayArr});
             }
         })
     	.error(function(data) {
@@ -177,7 +182,9 @@
     		$http.get(expressServer+'/getcarrierinfo/'+carrierCode+"?month="+$scope.monthFilter)
     		.success(function(data) {
                 document.getElementById('infoCarrierDelays').style.display = "none";
+                document.getElementById('errorDelays').style.display = "none";
                 document.getElementById('infoAirportDelays').style.display = "none";
+                document.getElementById('infoOtherAirportDelays').style.display = "none";
     			document.getElementById("infoCarrier").style.display = "inline";
     			createGraphWeekCarrier($scope, carrierCode, data);
                 //add more graphs here
@@ -191,7 +198,9 @@
     		$http.get(expressServer+'/getghostflights/'+carrierCode)
     		.success(function(data) {
                 document.getElementById('infoCarrierDelays').style.display = "none";
+                document.getElementById('errorDelays').style.display = "none";
                 document.getElementById('infoAirportDelays').style.display = "none";
+                document.getElementById('infoOtherAirportDelays').style.display = "none";
     			document.getElementById('infoCarrier').style.display = "none";
                 document.getElementById('infoGhostFlights').style.display = "inline";
     			createGraphGhostFlights($scope, carrierCode, data);
@@ -199,9 +208,17 @@
     		.error(function(data) {
     			console.log('Error: ' + data);
     		});
+            
+            
+            $http.get(expressServer+'/getcarrierdelay/'+carrierCode)
+    		.success(function(data) {
+                document.getElementById('otherInfoCarrierDelays').style.display = "inline";
+    			createGraphOtherCarrierDelays($scope, carrierCode, data);
+            })
+    		.error(function(data) {
+    			console.log('Error: ' + data);
+    		});   
     	}
-        
-        
     };
         
     $scope.showInfoCarrier = function() {
@@ -416,6 +433,19 @@
                     countDelayArr24h: info.CountDelayArr24h,
                     countDelayArrOther: info.CountDelayArrOther,
                     
+                    //Other info delays for airport
+                    carrierDelayDep: info.CarrierDelayDep,
+                    weatherDelayDep: info.WeatherDelayDep,
+                    nasDelayDep: info.NASDelayDep,
+                    securityDelayDep: info.SecurityDelayDep,
+                    lateAircraftDelayDep: info.LateAircraftDelayDep,
+                    
+                    carrierDelayArr: info.CarrierDelayArr,
+                    weatherDelayArr: info.WeatherDelayArr,
+                    nasDelayArr: info.NASDelayArr,
+                    securityDelayArr: info.SecurityDelayArr,
+                    lateAircraftDelayArr: info.LateAircraftDelayArr,
+                    
     				opacity: 1,
     				animation: google.maps.Animation.DROP
     			});
@@ -443,10 +473,13 @@
                             document.getElementById('infoRoute').style.display = "none";
                             document.getElementById('carrierDetails').style.display = "none";
                             document.getElementById('infoCarrierDelays').style.display = "none";
+                            document.getElementById('errorDelays').style.display = "none";
                             document.getElementById('infoAirport').style.display = "inline";
                             document.getElementById('infoAirportDelays').style.display = "inline";
+                            document.getElementById('infoOtherAirportDelays').style.display = "inline";
                             window.setTimeout(function() {
                                 showGraphsAirport ($scope);
+                                showOtherGraphsAirport ($scope);
                             }, 100);
                         }else{
                         	if($scope.markerClicked == null){
@@ -455,8 +488,11 @@
                                 //$scope.showElements.tableDetailsAirport = false;
                                 document.getElementById('infoAirport').style.display = "inline";
                                 document.getElementById('infoAirportDelays').style.display = "inline";
+                                document.getElementById('infoOtherAirportDelays').style.display = "inline";
                                 document.getElementById('infoCarrierDelays').style.display = "none";
+                                document.getElementById('errorDelays').style.display = "none";
                                 showGraphsAirport ($scope);
+                                showOtherGraphsAirport ($scope);
                                 
                             }else{
                                 // Unclick di un marker
@@ -465,8 +501,10 @@
                                 document.getElementById('infoRoute').style.display = "none";
                                 document.getElementById('carrierDetails').style.display = "none";
                                 document.getElementById('infoCarrierDelays').style.display = "none";
+                                document.getElementById('errorDelays').style.display = "none";
                                 document.getElementById('infoAirport').style.display = "none";
                                 document.getElementById('infoAirportDelays').style.display = "none";
+                                document.getElementById('infoOtherAirportDelays').style.display = "none";
                             }
                         }
                     }
@@ -637,6 +675,78 @@
         chartGraphCountArr.render();
     }
 
+    function showOtherGraphsAirport ($scope){
+         var chartDep = new CanvasJS.Chart("graphOtherAirportDelaysDep",
+        {
+            title:{
+                text: "Cause dei ritardi in partenza per l'aeroporto di "+$scope.airportSelected.city
+            },
+                animationEnabled: true,
+            legend:{
+                verticalAlign: "center",
+                horizontalAlign: "left",
+                fontSize: 20,
+                fontFamily: "Helvetica"        
+            },
+            
+            data: [
+            {        
+                type: "pie",       
+                indexLabelFontFamily: "Garamond",       
+                indexLabelFontSize: 20,
+                indexLabel: "{label} {y}%",
+                startAngle:-20,      
+                showInLegend: true,
+                toolTipContent:"{legendText} {y}%",
+                dataPoints: [
+                    {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].carrierDelayDep).toFixed(4), legendText:"Compagnie", label: "Compagnie" },
+                    {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].weatherDelayDep).toFixed(4), legendText:"Meteo", label: "Meteo" },
+                    {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].nasDelayDep).toFixed(4), legendText:"Aviazione nazionale", label: "Aviazione nazionale" },
+                    {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].securityDelayDep).toFixed(4), legendText:"Sicurezza" , label: "Sicurezza"},
+                    {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].lateAircraftDelayDep).toFixed(4), legendText:"Voli" , label: "Voli"}
+                ]
+            }
+            ]
+        });
+        
+        chartDep.render();
+        
+         var chartArr = new CanvasJS.Chart("graphOtherAirportDelaysArr",
+        {
+            title:{
+                text: "Cause dei ritardi in arrivo per l'aeroporto di "+$scope.airportSelected.city
+            },
+                animationEnabled: true,
+            legend:{
+                verticalAlign: "center",
+                horizontalAlign: "left",
+                fontSize: 20,
+                fontFamily: "Helvetica"        
+            },
+            
+            data: [
+            {        
+                type: "pie",       
+                indexLabelFontFamily: "Garamond",       
+                indexLabelFontSize: 20,
+                indexLabel: "{label} {y}%",
+                startAngle:-20,      
+                showInLegend: true,
+                toolTipContent:"{legendText} {y}%",
+                dataPoints: [
+                    {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].carrierDelayArr).toFixed(4), legendText:"Compagnie", label: "Compagnie" },
+                    {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].weatherDelayArr).toFixed(4), legendText:"Meteo", label: "Meteo" },
+                    {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].nasDelayArr).toFixed(4), legendText:"Aviazione nazionale", label: "Aviazione nazionale" },
+                    {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].securityDelayArr).toFixed(4), legendText:"Sicurezza" , label: "Sicurezza"},
+                    {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].lateAircraftDelayArr).toFixed(4), legendText:"Voli" , label: "Voli"}
+                ]
+            }
+            ]
+        });
+        
+        chartArr.render();
+    }
+
     function allCarriers($scope, $http){
     	$http.get(expressServer+'/getallcarrier?month='+$scope.monthFilter)
     	.success(function(data) {
@@ -654,22 +764,24 @@
     	allControl.id = "allcarrier";
     	allControl.title = "Airline Carrier";
     	allControl.className = "allControl";
-
-    	for(var i=0; i<data.length; i++){
+        
+        var sortedData = data.sort();
+        
+    	for(var i=0; i<sortedData.length; i++){
     		var br = document.createElement('br');
     		var controlDiv = document.createElement('div');
     		controlDiv.id = "carrierDiv";
     		controlDiv.className = "carrierDiv";
-    		controlDiv.title = "Click to select only the "+data[i]+" routes";
+    		controlDiv.title = "Clicca per selezionare solo le rotte di "+getNameCarrier(data[i]);
     		allControl.appendChild(controlDiv);
     		allControl.appendChild(br);
 
-    		var carrierName = getNameCarrier(data[i]);
+    		var carrierName = getNameCarrier(sortedData[i]);
 
     		var controlText = document.createElement('div');
-    		controlText.id = "carrierText"+data[i];
+    		controlText.id = "carrierText"+sortedData[i];
     		controlText.innerHTML = carrierName;
-    		controlText.prop = data[i];
+    		controlText.prop = sortedData[i];
     		controlText.className = "carrierText";
     		controlText.style.color = "black";
     		controlText.align = "center";
@@ -677,7 +789,7 @@
 
     		$scope.airlineControls.push(controlText);
 
-    		var text = data[i];
+    		var text = sortedData[i];
 
     		controlText.addEventListener('click', function() {
     			if($scope.markerClicked === null){
@@ -698,8 +810,10 @@
     					setMarkersOpacity($scope, 1);
                         document.getElementById('infoRoute').style.display = "none";
                         document.getElementById('infoCarrierDelays').style.display = "none";
+                        document.getElementById('errorDelays').style.display = "none";
     					document.getElementById("infoCarrier").style.display = "none";
                         document.getElementById('infoGhostFlights').style.display = "none";
+                        document.getElementById('otherInfoCarrierDelays').style.display = "none";
     				}
     			}
     		});
@@ -771,8 +885,11 @@
     		document.getElementById('infoAirport').style.display = "none";
             document.getElementById('carrierDetails').style.display = "none";
             document.getElementById('infoCarrierDelays').style.display = "none";
+            document.getElementById('errorDelays').style.display = "none";
             document.getElementById('infoAirportDelays').style.display = "none";
+            document.getElementById('infoOtherAirportDelays').style.display = "none";
             document.getElementById('infoGhostFlights').style.display = "none";
+            document.getElementById('otherInfoCarrierDelays').style.display = "none";
 
     		$http.get(expressServer+'/getrouteinfo?origin='+flightPath.originIata+'&dest='+flightPath.destIata)
     		.success(function(data) {
@@ -881,7 +998,21 @@
     		return "Eastern Air Lines";
     	if(carrierCode == "CO")
     		return "Continental Air Lines";
-
+        if(carrierCode == "YV")
+            return "Mesa Airlines";
+        if(carrierCode == "9E")
+            return "Endeavor Air";
+        if(carrierCode == "OH")
+            return "US Airways Express";
+        if(carrierCode == "DH")
+            return "Discovery Airways";
+        if(carrierCode == "XE")
+            return "Express Jet";
+        if(carrierCode == "TZ")
+            return "ATA Airlines";
+        if(carrierCode == "KH")
+            return "Aloha Airlines";
+        
     	return carrierCode;
     }
 
@@ -944,7 +1075,12 @@
     }
 
     function createGraphWeekCarrier($scope, carrierCode, data){
-
+        
+        if(data.length == 0)
+            document.getElementById('errorDelays').style.display = "inline";
+        else
+            document.getElementById('errorDelays').style.display = "none";
+        
     	var meansPoints = [];
     	var deviationPoints = [];
     	var countPoints0 = [];
@@ -1094,11 +1230,9 @@
         var datas = [];
         
         for(var i=0; i<data.length; i++)
-            points.push({x: new Date(data[i].Year, data[i].Month, 1), y: parseFloat(data[i].GhostFlightPercent.substring(0,5)), countGhost: data[i].CountGhostFlight, countAll: data[i].CountAllFlight});
+            points.push({x: new Date(data[i].Year, parseInt(data[i].Month), 1), y: parseFloat(data[i].GhostFlightPercent.substring(0,5)), countGhost: data[i].CountGhostFlight, countAll: data[i].CountAllFlight});
 
         datas.push({type: "spline", toolTipContent: "Voli fantasma: {countGhost}</br>Voli totali: {countAll}</br>Percentuale: {y}%", dataPoints: points});
-        
-        console.log(datas);
         
         var chart = new CanvasJS.Chart("graphGhostFlightsCarrier",
         {
@@ -1108,7 +1242,42 @@
            data: datas
         });
 
-        console.log(chart);
+        chart.render();
+    }
 
+    function createGraphOtherCarrierDelays($scope, carrierCode, data){
+        
+            var chart = new CanvasJS.Chart("graphOtherCarrierDelays",
+        {
+            title:{
+                text: "Cause dei ritardi per la compagnia "+getNameCarrier(carrierCode)
+            },
+                animationEnabled: true,
+            legend:{
+                verticalAlign: "center",
+                horizontalAlign: "left",
+                fontSize: 20,
+                fontFamily: "Helvetica"        
+            },
+            
+            data: [
+            {        
+                type: "pie",       
+                indexLabelFontFamily: "Garamond",       
+                indexLabelFontSize: 20,
+                indexLabel: "{label} {y}%",
+                startAngle:-20,      
+                showInLegend: true,
+                toolTipContent:"{legendText} {y}%",
+                dataPoints: [
+                    {  y: (data[0].CarrierDelayPercent).toFixed(4), legendText:"Compagnia", label: "Compagnia" },
+                    {  y: (data[0].WeatherDelayPercent).toFixed(4), legendText:"Meteo", label: "Meteo" },
+                    {  y: (data[0].NASDelayPercent).toFixed(4), legendText:"Aviazione nazionale", label: "Aviazione nazionale" },
+                    {  y: (data[0].SecurityDelayPercent).toFixed(4), legendText:"Sicurezza" , label: "Sicurezza"},
+                    {  y: (data[0].LateAircraftDelayPercent).toFixed(4), legendText:"Voli" , label: "Voli"}
+                ]
+            }
+            ]
+        });
         chart.render();
     }
