@@ -45,7 +45,7 @@ var carrierDelay = mongoose.model('carrierproblems', {
 });
 
 // listen server ======================================
-var port = 8083; //Server port
+var port = 80; //Server port
 app.listen(port); 
 console.log("Server avviato sulla porta: "+port);
 
@@ -350,4 +350,53 @@ app.get('/getcarrierdelay/:carrier', function(req, res, next) {
             
             res.json(delays); // return all delays about a specific air carrier in JSON format
         });  
+});
+
+
+app.get('', function(req, res) {
+        res.sendFile(__dirname + '/index.html'); // load the single view file (angular will handle the page changes on the front-end)
+});
+
+app.get('/map', function(req, res) {
+        res.sendFile(__dirname + '/map.html'); // load the single view file (angular will handle the page changes on the front-end)
+});
+
+app.get('/predictions', function(req, res) {
+        res.sendFile(__dirname + '/predictions.html'); // load the single view file (angular will handle the page changes on the front-end)
+});
+
+app.get('/logo.png', function(req, res) {
+        res.sendFile(__dirname + '/logo.png'); // load the single view file (angular will handle the page changes on the front-end)
+});
+
+app.get('/favicon.ico', function(req, res) {
+        res.sendFile(__dirname + '/favicon.ico'); // load the single view file (angular will handle the page changes on the front-end)
+});
+
+
+
+app.get('/css/maps.css', function(req, res) {
+        res.sendFile(__dirname + '/css/maps.css'); // load the single view file (angular will handle the page changes on the front-end)
+});
+
+app.get('/js/canvasjs.min.js', function(req, res) {
+        res.sendFile(__dirname + '/js/canvasjs.min.js'); // load the single view file (angular will handle the page changes on the front-end)
+});
+
+app.get('/js/maps.js', function(req, res) {
+        res.sendFile(__dirname + '/js/maps.js'); // load the single view file (angular will handle the page changes on the front-end)
+});
+
+app.get('/js/icons/airport.png', function(req, res) {
+        res.sendFile(__dirname + '/js/icons/airport.png'); // load the single view file (angular will handle the page changes on the front-end)
+});
+
+
+
+app.get('/css/predictions.css', function(req, res) {
+        res.sendFile(__dirname + '/css/predictions.css'); // load the single view file (angular will handle the page changes on the front-end)
+});
+
+app.get('/js/predictions.js', function(req, res) {
+        res.sendFile(__dirname + '/js/predictions.js'); // load the single view file (angular will handle the page changes on the front-end)
 });
