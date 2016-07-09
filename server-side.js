@@ -3,14 +3,6 @@
 // set up ========================
 var express  = require('express');
 var app      = express();    // create our app w/ express
-require('./app.js')(function(theApp) {
-    app.use(theApp);
-    var d = domain.create()
-    d.run(function(){
-        http.createServer(app).listen(80);
-    });
-});
-
 var mongoose = require('mongoose'), Schema = mongoose.Schema;                     // mongoose for mongodb
 var morgan = require('morgan');             // log requests to the console (express4)
 var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
@@ -26,6 +18,23 @@ app.use(bodyParser.urlencoded({'extended':'true'}));            // parse applica
 app.use(bodyParser.json());                                     // parse application/json
 app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
 app.use(methodOverride());
+
+var ok = require('okay');
+app.use(require('express-domain-middleware'));
+app.use(app.router);
+app.use(function errorHandler(err, req, res, next) {
+  console.log('error on request %d %s %s: %j', process.domain.id, req.method, req.url, err);
+  res.send(500, "Something bad happened. :(");
+});
+app.get('/error', function(req, res, next) {
+  db.query('SELECT happiness()', ok(next, function(rows) {
+    fs.readFile('asldkfjasdf', ok(next, function(contents) {
+      process.nextTick(ok(next, function() {
+        throw new Error("The individual request will be passed to the express error handler, and your application will keep running.");
+      }));
+    }));
+  }));
+});
 
 // define models =================
 var allMarkers = mongoose.model('markers', {
@@ -54,8 +63,8 @@ var carrierDelay = mongoose.model('carrierproblems', {
 
 // listen server ======================================
 //var port = 8083; //Server port
-//var port = 80; //Server port
-//app.listen(port); 
+var port = 80; //Server port
+app.listen(port); 
 console.log("Server avviato sulla porta: "+port);
 
 module.exports = allMarkers;
