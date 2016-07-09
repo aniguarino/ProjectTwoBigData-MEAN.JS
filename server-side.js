@@ -2,7 +2,15 @@
 
 // set up ========================
 var express  = require('express');
-var app      = express(), server = require('http').createServer(app), io = io.listen(server);    // create our app w/ express
+var app      = express();    // create our app w/ express
+require('./app.js')(function(theApp) {
+    app.use(theApp);
+    var d = domain.create()
+    d.run(function(){
+        http.createServer(app).listen(80);
+    });
+});
+
 var mongoose = require('mongoose'), Schema = mongoose.Schema;                     // mongoose for mongodb
 var morgan = require('morgan');             // log requests to the console (express4)
 var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
@@ -48,7 +56,6 @@ var carrierDelay = mongoose.model('carrierproblems', {
 //var port = 8083; //Server port
 //var port = 80; //Server port
 //app.listen(port); 
-server.listen(80);
 console.log("Server avviato sulla porta: "+port);
 
 module.exports = allMarkers;
