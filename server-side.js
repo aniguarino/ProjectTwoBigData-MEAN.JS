@@ -20,7 +20,6 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse applica
 app.use(methodOverride());
 
 app.use(require('express-domain-middleware'));
-app.use(app.router);
 
 // define models =================
 var allMarkers = mongoose.model('markers', {
