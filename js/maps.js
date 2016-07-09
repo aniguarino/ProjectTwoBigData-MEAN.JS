@@ -162,7 +162,7 @@
         removeAllLines($scope);
         resetStyleControls($scope);
     }
-}, 250);
+}, 800);
   }
 };
 
