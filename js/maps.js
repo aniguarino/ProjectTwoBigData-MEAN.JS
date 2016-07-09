@@ -1,11 +1,11 @@
     var expressServer = "http://184.72.169.1";
-    //var expressServer = "http://localhost:8083";
+    //var expressServer = "http://localhost:80";
     var map;
     //Angular App Module and Controller
     var sampleApp = angular.module('mapsApp', []);
 
     sampleApp.controller('controllerMap', function ($scope, $http) {
-
+    
     // when landing on the page, get all markers and show them
     $http.get(expressServer+'/getmarkers')
     .success(function(data) {
@@ -188,7 +188,7 @@ $scope.onCarrierClick = function(carrierCode){
         document.getElementById('infoOtherAirportDelays').style.display = "none";
         document.getElementById("infoCarrier").style.display = "inline";
         createGraphWeekCarrier($scope, carrierCode, data);
-                //add more graphs here
+        window.scrollBy(0,100);
             })
       .error(function(data) {
          console.log('Error: ' + data);
@@ -205,6 +205,7 @@ $scope.onCarrierClick = function(carrierCode){
         document.getElementById('infoCarrier').style.display = "none";
         document.getElementById('infoGhostFlights').style.display = "inline";
         createGraphGhostFlights($scope, carrierCode, data);
+        window.scrollBy(0,100);
     })
       .error(function(data) {
          console.log('Error: ' + data);
@@ -317,7 +318,7 @@ $scope.showInfoCarrier = function() {
            },			
            axisY: {
                title: "Numero di voli"
-           },		
+           },
            data: [ 
            {
                type: "column",	
@@ -495,7 +496,7 @@ $scope.showInfoCarrier = function() {
                                 document.getElementById('errorDelays').style.display = "none";
                                 showGraphsAirport ($scope);
                                 showOtherGraphsAirport ($scope);
-                                
+                                window.scrollBy(0,100);
                             }else{
                                 // Unclick di un marker
                                 $scope.markerClicked = null;
@@ -834,7 +835,6 @@ $(document).ready(function() {
                    document.getElementById('otherInfoCarrierDelays').style.display = "none";
                }
            }
-           pageScroll();
        });
       }
       map.controls[google.maps.ControlPosition.RIGHT_TOP].push(allControl);
@@ -928,7 +928,7 @@ function drawLine($scope, $http, data, stroke) {
                 }
                 $scope.currentCarrier = null;
                 $scope.routeSelected.workingCarrier = data;
-
+                window.scrollBy(0,100);
             }
         })
       .error(function(data) {
@@ -1303,9 +1303,4 @@ function createGraphOtherCarrierDelays($scope, carrierCode, data){
         ]
     });
     chart.render();
-}
-
-function pageScroll() {
-        window.scrollBy(0,50); // horizontal and vertical scroll increments
-        scrolldelay = setTimeout('pageScroll()',100); // scrolls every 100 milliseconds
 }
