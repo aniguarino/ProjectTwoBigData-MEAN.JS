@@ -1,4 +1,4 @@
-    var expressServer = "http://bigflightsrm3.tk:80";
+    var expressServer = "http://184.72.169.1:80";
     //var expressServer = "http://localhost:80";
     var map;
     //Angular App Module and Controller
