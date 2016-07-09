@@ -2,7 +2,7 @@
 
 // set up ========================
 var express  = require('express');
-var app      = express();                               // create our app w/ express
+var app      = express(), server = require('http').createServer(app), io = io.listen(server);            // create our app w/ express
 var mongoose = require('mongoose'), Schema = mongoose.Schema;                     // mongoose for mongodb
 var morgan = require('morgan');             // log requests to the console (express4)
 var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
