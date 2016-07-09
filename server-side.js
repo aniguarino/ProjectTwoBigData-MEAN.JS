@@ -2,7 +2,7 @@
 
 // set up ========================
 var express  = require('express');
-var app      = express(), server = require('http').createServer(app);    // create our app w/ express
+var app      = express(), server = require('http').createServer(app), io = io.listen(server);    // create our app w/ express
 var mongoose = require('mongoose'), Schema = mongoose.Schema;                     // mongoose for mongodb
 var morgan = require('morgan');             // log requests to the console (express4)
 var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
@@ -46,8 +46,9 @@ var carrierDelay = mongoose.model('carrierproblems', {
 
 // listen server ======================================
 //var port = 8083; //Server port
-var port = 80; //Server port
-app.listen(port); 
+//var port = 80; //Server port
+//app.listen(port); 
+server.listen(80);
 console.log("Server avviato sulla porta: "+port);
 
 module.exports = allMarkers;
@@ -395,8 +396,6 @@ app.get('/js/icons/airport.png', function(req, res) {
 app.get('/js/icons/airportred.png', function(req, res) {
         res.sendFile(__dirname + '/js/icons/airportred.png'); // load the single view file (angular will handle the page changes on the front-end)
 });
-
-
 
 app.get('/css/predictions.css', function(req, res) {
         res.sendFile(__dirname + '/css/predictions.css'); // load the single view file (angular will handle the page changes on the front-end)
