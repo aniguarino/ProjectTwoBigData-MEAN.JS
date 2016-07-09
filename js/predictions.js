@@ -1,6 +1,6 @@
-var expressServer = "http://184.72.169.1";
+var expressServer = "http://bigflightsrm3.tk:80";
 //var expressServer = "http://localhost:80";
-var predictionServer = "http://184.72.169.1:8080";
+var predictionServer = "http://bigflightsrm3.tk:8080";
 //Angular App Module and Controller
 var sampleApp = angular.module('predictionsApp', []);
 
