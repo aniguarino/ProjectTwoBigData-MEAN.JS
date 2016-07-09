@@ -45,8 +45,8 @@ var carrierDelay = mongoose.model('carrierproblems', {
 });
 
 // listen server ======================================
-var port = 8083; //Server port
-//var port = 80; //Server port
+//var port = 8083; //Server port
+var port = 80; //Server port
 app.listen(port); 
 console.log("Server avviato sulla porta: "+port);
 

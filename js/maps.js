@@ -1,5 +1,5 @@
-    //var expressServer = "http://bigflightsrm3.tk";
-    var expressServer = "http://localhost:8083";
+    var expressServer = "http://bigflightsrm3.tk";
+    //var expressServer = "http://localhost:8083";
     var map;
     //Angular App Module and Controller
     var sampleApp = angular.module('mapsApp', []);
@@ -834,7 +834,7 @@ $(document).ready(function() {
                    document.getElementById('otherInfoCarrierDelays').style.display = "none";
                }
            }
-            pageScroll();
+           pageScroll();
        });
       }
       map.controls[google.maps.ControlPosition.RIGHT_TOP].push(allControl);
