@@ -188,6 +188,7 @@ $scope.onCarrierClick = function(carrierCode){
         document.getElementById('infoOtherAirportDelays').style.display = "none";
         document.getElementById("infoCarrier").style.display = "inline";
         createGraphWeekCarrier($scope, carrierCode, data);
+        window.scrollBy(0,100);
             })
       .error(function(data) {
          console.log('Error: ' + data);
@@ -204,6 +205,7 @@ $scope.onCarrierClick = function(carrierCode){
         document.getElementById('infoCarrier').style.display = "none";
         document.getElementById('infoGhostFlights').style.display = "inline";
         createGraphGhostFlights($scope, carrierCode, data);
+        window.scrollBy(0,100);
     })
       .error(function(data) {
          console.log('Error: ' + data);
@@ -219,7 +221,7 @@ $scope.onCarrierClick = function(carrierCode){
          console.log('Error: ' + data);
      });   
   }
-    window.scrollBy(0,100);
+    
 };
 
 $scope.showInfoCarrier = function() {
