@@ -3,17 +3,17 @@
 <head>
 	<meta charset="ISO-8859-1">
 	<title>Sezione Mappa</title>
-    
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     
-	<link rel="stylesheet" href="css/maps.css">
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
-	<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAoX6LaclBapeTtEpltmUNXSNhhMqCmZeI"></script>
-	<script type="text/javascript" src="js/maps.js"></script>
+    <link rel="stylesheet" href="css/maps.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAoX6LaclBapeTtEpltmUNXSNhhMqCmZeI"></script>
+    <script type="text/javascript" src="js/maps.js"></script>
     <script type="text/javascript" src="js/canvasjs.min.js"></script>
 </head>
 
@@ -23,11 +23,11 @@
             <div class="navbar-header">
                 <a class="navbar-brand">USA Flights</a>
             </div>
-                <ul class="nav navbar-nav">
+            <ul class="nav navbar-nav">
                 <li class="active"><a href="/">Home</a></li>
                 <li><a href="#">Sezione Mappa</a></li>
-                 <li><a href="/predictions">Sezione Predizioni Ritardi</a></li>
-                </ul>
+                <li><a href="/predictions">Sezione Predizioni Ritardi</a></li>
+            </ul>
         </div>
     </nav>
     
@@ -58,19 +58,30 @@
             <div id="graphOtherCarrierDelays" class="graph graphOtherCarrierDelays" title="Grafico informativo" style="height:300px;"></div>
         </div>
         <div id="infoRoute" class="text tableInfo" title="Informazioni sulla rotta cliccata" ng-show="showElements.tableDetailsAirport">
-            <div id="RouteOrigin" class="textMedium" title="Iata d'origine">(ORIGINE) IATA Code: {{ routeSelected.originIata }} - Citta': {{ routeSelected.originCity }}</div>
-            <div id="RouteDest" class="textMedium" title="Iata di destinazione">(DESTINAZIONE) IATA Code: {{ routeSelected.destIata }} - Citta': {{ routeSelected.destCity }}</div>
-            <div id="airtimeRoute" class="textMedium" title="Tempo di volo">Tempo di volo medio: {{ routeSelected.airTime }}</div>
-            <div id="distanceRoute" class="textMedium" title="Distanza in miglia">Distanza in miglia: {{ routeSelected.distanceMiles }} - Distanza in chilometri: {{ routeSelected.distanceKm }}</div>    
-            <h3>Compagnie che servono la rotta:</h3>
-            
-            <select id="selectCarrier" ng-init="currentCarrier = options[0]" ng-model="currentCarrier" ng-change="showInfoCarrier()" class="button">
-                <option ng-repeat="carrier in routeSelected.workingCarrier">
-                    {{ carrier.UniqueCarrier }}
-                </option>
-            </select>
+            <div>
+                <div><h2>Origine</h2></div>
+                <div id="RouteOriginIata" class="textLarge" title="Iata d'origine">{{ routeSelected.originIata }}</div>
+                <div id="RouteOriginCity" class="textMedium" title="Città d'origine">{{ routeSelected.originCity }}</div>
+            </div>
+
+            <div>
+                <div><h2>Destinazione</h2></div>
+                <div id="RouteDestIata" class="textLarge" title="Iata di destinazione">{{ routeSelected.destIata }}</div>
+                <div id="RouteDestCity" class="textMedium" title="Città di destinazione">{{ routeSelected.destCity }}</div>
+            </div>
+            <br>
+            <div class="infoRoute">
+                <div id="airtimeRoute" class="textLight" title="Tempo di volo">Tempo di volo medio: {{ routeSelected.airTime }}</div>
+                <div id="distanceRoute" class="textLight" title="Distanza in miglia">Distanza in miglia: {{ routeSelected.distanceMiles }} - Distanza in chilometri: {{ routeSelected.distanceKm }}</div>    
+                <h3>Compagnie che servono la rotta:</h3>
+                <select id="selectCarrier" ng-init="currentCarrier = options[0]" ng-model="currentCarrier" ng-change="showInfoCarrier()" class="button textLight">
+                    <option ng-repeat="carrier in routeSelected.workingCarrier">
+                        {{ carrier.UniqueCarrier }}
+                    </option>
+                </select>
+            </div>
             <br><br>
-            <div id="carrierDetails"></div>
+            <div id="carrierDetails" class="textMedium"></div>
             <br><br>
         </div>
         <div id="infoCarrierDelays" style="display: none">
@@ -81,16 +92,17 @@
             <div id="iataAirport" class="textLarge" title="Iata aeroporto">{{ airportSelected.iata }}</div>
             <div id="cityAirport" class="textMedium" title="Citta' aeroporto">{{ airportSelected.city }}</div>
             
-            <h4>Lista delle destinazioni dall'aeroporto corrente:</h4>
-            <select class="button">
+            <div class="textLight">Lista delle destinazioni dall'aeroporto corrente:</div>
+            <select class="button textLight">
                 <option ng-repeat="airport in airportSelected.airportReached">
                     IATA Code: {{ airport.iata }} - Citta': {{ airport.city }}
                 </option>
             </select>
-            <br>
-            <h4>Ritardo medio per l'aeroporto sui voli in partenza: {{ airportSelected.airportInfoGraphs[0].meanDelayDep }}<br>Ritardo medio per l'aeroporto sui voli in arrivo: {{ airportSelected.airportInfoGraphs[0].meanDelayArr }}</h4>
-            <br>
-            <h4>Grafici informativi per l'aeroporto di {{ airportSelected.city }} considerando tutte le compagnie:</h4>
+            <div class="block">
+                <div class="textLight">Ritardo medio per l'aeroporto sui voli in partenza: {{ airportSelected.airportInfoGraphs[0].meanDelayDep }}</div>
+                <div class="textLight">Ritardo medio per l'aeroporto sui voli in arrivo: {{ airportSelected.airportInfoGraphs[0].meanDelayArr }}</div>
+            </div>
+            <div class="textMedium block">Grafici informativi per l'aeroporto di {{ airportSelected.city }} considerando tutte le compagnie:</div>
         </div>
         <div id="infoAirportDelays" style="display: none">
             <div id="graphAirportDelaysDep" class="graph graphAirportDelaysDep" title="Grafico informativo" style="height:300px;"></div>

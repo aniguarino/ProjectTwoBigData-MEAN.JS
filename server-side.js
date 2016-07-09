@@ -45,7 +45,8 @@ var carrierDelay = mongoose.model('carrierproblems', {
 });
 
 // listen server ======================================
-var port = 80; //Server port
+var port = 8083; //Server port
+//var port = 80; //Server port
 app.listen(port); 
 console.log("Server avviato sulla porta: "+port);
 
@@ -389,6 +390,10 @@ app.get('/js/maps.js', function(req, res) {
 
 app.get('/js/icons/airport.png', function(req, res) {
         res.sendFile(__dirname + '/js/icons/airport.png'); // load the single view file (angular will handle the page changes on the front-end)
+});
+
+app.get('/js/icons/airportred.png', function(req, res) {
+        res.sendFile(__dirname + '/js/icons/airportred.png'); // load the single view file (angular will handle the page changes on the front-end)
 });
 
 

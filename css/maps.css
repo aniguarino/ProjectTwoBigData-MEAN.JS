@@ -82,6 +82,10 @@
     margin-right: 10px;
     margin-top: 10px;
 }
+.block{
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
 .dateDiv {
     background-color: #fff;
     border: 2px solid #fff;
@@ -119,16 +123,6 @@
     padding-left: 5px;
     padding-right: 5px;
 }
-.textLarge{
-    color: rgb(25,25,25);
-    font-family: Roboto,Arial,sans-serif;
-    font-size: 60px;
-    line-height: 40px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    padding-left: 5px;
-    padding-right: 5px;
-}
 .textLarge {
     color: rgb(25,25,25);
     font-family: Roboto,Arial,sans-serif;
@@ -143,7 +137,17 @@
     color: rgb(25,25,25);
     font-family: Roboto,Arial,sans-serif;
     font-size: 26px;
-    line-height: 40px;
+    line-height: 28px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.textLight {
+    color: rgb(25,25,25);
+    font-family: Roboto,Arial,sans-serif;
+    font-size: 16px;
+    line-height: 18px;
     padding-top: 5px;
     padding-bottom: 5px;
     padding-left: 5px;
@@ -180,21 +184,44 @@
 }
 .graphCountDelaysDep{
     float: left;
-    width: 35%;
+    width: 40%;
     margin-bottom: 4%;
-    margin-left: 12%;
+    margin-left: 7%;
 }
 .graphCountDelaysArr {
     float: right;
-    width: 35%;
+    width: 40%;
     margin-bottom: 4%;
-    margin-right: 12%;
+    margin-right: 7%;
 }
 .graphGhostFlightsCarrier {
     float: left;
     width: 50%;
     margin-bottom: 4%;
     margin-left: 25%;
+}
+.graphOtherCarrierDelays {
+    float: left;
+    width: 50%;
+    margin-bottom: 4%;
+    margin-left: 25%;
+}
+.routeOrigin {
+    float: left;
+    width: 30%;
+    margin-bottom: 4%;
+    margin-left: 10%;
+}
+.infoRoute {
+    width: 80%;
+    margin-bottom: 3%;
+}
+.routeDest {
+    text-align: right;
+    float: right;
+    width: 30%;
+    margin-bottom: 4%;
+    margin-right: 10%;
 }
 .graphOtherCarrierDelays {
     float: left;
