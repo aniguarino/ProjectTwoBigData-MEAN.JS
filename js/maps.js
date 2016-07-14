@@ -23,8 +23,8 @@
     	iata: "",
     	city: "",
     	airportReached: [],
-        airportInfoGraphs: [],
-        airportOtherInfoGraphs: []
+	meanDelayArr: "",
+	meanDelayDep: ""
     }
 
     $scope.routeSelected = {
@@ -113,6 +113,9 @@
       if(data.length != 0){
        $scope.airportSelected.iata = data[0].OriginIata;
        $scope.airportSelected.city = data[0].OriginCity;
+	$scope.airportSelected.meanDelayDep = $scope.markers[data[0].OriginIata].meanDelayDep;
+	$scope.airportSelected.meanDelayArr = $scope.markers[data[0].OriginIata].meanDelayArr;
+
 
        $scope.airportSelected.airportReached = [];
        for(var i = 0; i < data.length; i++){
@@ -120,12 +123,6 @@
                     // Possibilità di aggiungere il nome della città raggiunta oltre lo iata
                     $scope.airportSelected.airportReached.push({iata: data[i].DestIata, city: data[i].DestCity});
                 }
-                
-                $scope.airportSelected.airportInfoGraphs = [];      
-                $scope.airportSelected.airportInfoGraphs.push({meanDelayDep: $scope.markers[data[0].OriginIata].meanDelayDep, meanDelayArr: $scope.markers[data[0].OriginIata].meanDelayArr, countDelayDep0: $scope.markers[data[0].OriginIata].countDelayDep0, countDelayDep15: $scope.markers[data[0].OriginIata].countDelayDep15, countDelayDep60: $scope.markers[data[0].OriginIata].countDelayDep60, countDelayDep3h: $scope.markers[data[0].OriginIata].countDelayDep3h, countDelayDep24h: $scope.markers[data[0].OriginIata].countDelayDep24h, countDelayDepOther: $scope.markers[data[0].OriginIata].countDelayDepOther, countDelayArr0: $scope.markers[data[0].OriginIata].countDelayArr0, countDelayArr15: $scope.markers[data[0].OriginIata].countDelayArr15, countDelayArr60: $scope.markers[data[0].OriginIata].countDelayArr60, countDelayArr3h: $scope.markers[data[0].OriginIata].countDelayArr3h, countDelayArr24h: $scope.markers[data[0].OriginIata].countDelayArr24h, countDelayArrOther: $scope.markers[data[0].OriginIata].countDelayArrOther});
-                
-                $scope.airportSelected.airportOtherInfoGraphs = [];      
-                $scope.airportSelected.airportOtherInfoGraphs.push({carrierDelayDep: $scope.markers[data[0].OriginIata].carrierDelayDep, weatherDelayDep: $scope.markers[data[0].OriginIata].weatherDelayDep, nasDelayDep: $scope.markers[data[0].OriginIata].nasDelayDep, securityDelayDep: $scope.markers[data[0].OriginIata].securityDelayDep, lateAircraftDelayDep: $scope.markers[data[0].OriginIata].lateAircraftDelayDep, carrierDelayArr: $scope.markers[data[0].OriginIata].carrierDelayArr, weatherDelayArr: $scope.markers[data[0].OriginIata].weatherDelayArr, nasDelayArr: $scope.markers[data[0].OriginIata].nasDelayArr, securityDelayArr: $scope.markers[data[0].OriginIata].securityDelayArr, lateAircraftDelayArr: $scope.markers[data[0].OriginIata].lateAircraftDelayArr});
             }
         })
      .error(function(data) {
@@ -535,7 +532,7 @@ $(document).ready(function() {
             theme: "theme3",
             animationEnabled: true,
             title:{
-                text: "Ritardi voli in partenza per l'aeroporto di "+$scope.airportSelected.city,
+                text: "Ritardi voli in partenza per l'aeroporto di "+$scope.markerClicked.city,
                 fontSize: 30
             },
             toolTip: {
@@ -550,42 +547,43 @@ $(document).ready(function() {
                 name: "In orario",
                 legendText: "In orario",
                 showInLegend: true, 
-                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayDep0, label: " "}]
+
+                dataPoints: [{y: $scope.markers[$scope.markerClicked.iata].countDelayDep0, label: " "}]
             },
             {
                 type: "column",	
                 name: "Ritardo entro 15 minuti",
                 legendText: "Ritardo entro 15 minuti",
                 showInLegend: true, 
-                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayDep15, label: " "}]
+                dataPoints: [{y: $scope.markers[$scope.markerClicked.iata].countDelayDep15, label: " "}]
             },
             {
                 type: "column",	
                 name: "Ritardo entro 1 ora",
                 legendText: "Ritardo entro 1 ora",
                 showInLegend: true, 
-                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayDep60, label: " "}]
+                dataPoints: [{y: $scope.markers[$scope.markerClicked.iata].countDelayDep60, label: " "}]
             },
             {
                 type: "column",	
                 name: "Ritardo entro 3 ore",
                 legendText: "Ritardo entro 3 ore",
                 showInLegend: true, 
-                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayDep3h, label: " "}]
+                dataPoints: [{y: $scope.markers[$scope.markerClicked.iata].countDelayDep3h, label: " "}]
             },
             {
                 type: "column",	
                 name: "Ritardo entro 24 ore",
                 legendText: "Ritardo entro 24 ore",
                 showInLegend: true, 
-                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayDep24h, label: " "}]
+                dataPoints: [{y: $scope.markers[$scope.markerClicked.iata].countDelayDep24h, label: " "}]
             },
             {
                 type: "column",	
                 name: "Ritardo oltre un giorno",
                 legendText: "Ritardo oltre un giorno",
                 showInLegend: true, 
-                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayDepOther, label: " "}]
+                dataPoints: [{y: $scope.markers[$scope.markerClicked.iata].countDelayDepOther, label: " "}]
             }
             ],
             legend:{
@@ -609,7 +607,7 @@ $(document).ready(function() {
             theme: "theme3",
             animationEnabled: true,
             title:{
-                text: "Ritardi voli in arrivo per l'aeroporto di "+$scope.airportSelected.city,
+                text: "Ritardi voli in arrivo per l'aeroporto di "+$scope.markerClicked.city,
                 fontSize: 30
             },
             toolTip: {
@@ -624,42 +622,42 @@ $(document).ready(function() {
                 name: "In orario",
                 legendText: "In orario",
                 showInLegend: true, 
-                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayArr0, label: " "}]
+                dataPoints: [{y: $scope.markers[$scope.markerClicked.iata].countDelayArr0, label: " "}]
             },
             {
                 type: "column",	
                 name: "Ritardo entro 15 minuti",
                 legendText: "Ritardo entro 15 minuti",
                 showInLegend: true, 
-                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayArr15, label: " "}]
+                dataPoints: [{y: $scope.markers[$scope.markerClicked.iata].countDelayArr15, label: " "}]
             },
             {
                 type: "column",	
                 name: "Ritardo entro 1 ora",
                 legendText: "Ritardo entro 1 ora",
                 showInLegend: true, 
-                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayArr60, label: " "}]
+                dataPoints: [{y: $scope.markers[$scope.markerClicked.iata].countDelayArr60, label: " "}]
             },
             {
                 type: "column",	
                 name: "Ritardo entro 3 ore",
                 legendText: "Ritardo entro 3 ore",
                 showInLegend: true, 
-                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayArr3h, label: " "}]
+                dataPoints: [{y: $scope.markers[$scope.markerClicked.iata].countDelayArr3h, label: " "}]
             },
             {
                 type: "column",	
                 name: "Ritardo entro 24 ore",
                 legendText: "Ritardo entro 24 ore",
                 showInLegend: true, 
-                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayArr24h, label: " "}]
+                dataPoints: [{y: $scope.markers[$scope.markerClicked.iata].countDelayArr24h, label: " "}]
             },
             {
                 type: "column",	
                 name: "Ritardo oltre un giorno",
                 legendText: "Ritardo oltre un giorno",
                 showInLegend: true, 
-                dataPoints: [{y: $scope.airportSelected.airportInfoGraphs[0].countDelayArrOther, label: " "}]
+                dataPoints: [{y: $scope.markers[$scope.markerClicked.iata].countDelayArrOther, label: " "}]
             }
             ],
             legend:{
@@ -683,7 +681,7 @@ $(document).ready(function() {
      var chartDep = new CanvasJS.Chart("graphOtherAirportDelaysDep",
      {
         title:{
-            text: "Cause dei ritardi in partenza per l'aeroporto di "+$scope.airportSelected.city
+            text: "Cause dei ritardi in partenza per l'aeroporto di "+$scope.markerClicked.city
         },
         animationEnabled: true,
         legend:{
@@ -703,11 +701,11 @@ $(document).ready(function() {
             showInLegend: true,
             toolTipContent:"{legendText} {y}%",
             dataPoints: [
-            {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].carrierDelayDep).toFixed(4), legendText:"Compagnie", label: "Compagnie" },
-            {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].weatherDelayDep).toFixed(4), legendText:"Meteo", label: "Meteo" },
-            {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].nasDelayDep).toFixed(4), legendText:"Aviazione nazionale", label: "Aviazione nazionale" },
-            {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].securityDelayDep).toFixed(4), legendText:"Sicurezza" , label: "Sicurezza"},
-            {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].lateAircraftDelayDep).toFixed(4), legendText:"Veivolo" , label: "Veivolo"}
+            {  y: ($scope.markers[$scope.markerClicked.iata].carrierDelayDep).toFixed(4), legendText:"Compagnie", label: "Compagnie" },
+            {  y: ($scope.markers[$scope.markerClicked.iata].weatherDelayDep).toFixed(4), legendText:"Meteo", label: "Meteo" },
+            {  y: ($scope.markers[$scope.markerClicked.iata].nasDelayDep).toFixed(4), legendText:"Aviazione nazionale", label: "Aviazione nazionale" },
+            {  y: ($scope.markers[$scope.markerClicked.iata].securityDelayDep).toFixed(4), legendText:"Sicurezza" , label: "Sicurezza"},
+            {  y: ($scope.markers[$scope.markerClicked.iata].lateAircraftDelayDep).toFixed(4), legendText:"Veivolo" , label: "Veivolo"}
             ]
         }
         ]
@@ -718,7 +716,7 @@ $(document).ready(function() {
      var chartArr = new CanvasJS.Chart("graphOtherAirportDelaysArr",
      {
         title:{
-            text: "Cause dei ritardi in arrivo per l'aeroporto di "+$scope.airportSelected.city
+            text: "Cause dei ritardi in arrivo per l'aeroporto di "+$scope.markerClicked.city
         },
         animationEnabled: true,
         legend:{
@@ -738,11 +736,11 @@ $(document).ready(function() {
             showInLegend: true,
             toolTipContent:"{legendText} {y}%",
             dataPoints: [
-            {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].carrierDelayArr).toFixed(4), legendText:"Compagnie", label: "Compagnie" },
-            {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].weatherDelayArr).toFixed(4), legendText:"Meteo", label: "Meteo" },
-            {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].nasDelayArr).toFixed(4), legendText:"Aviazione nazionale", label: "Aviazione nazionale" },
-            {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].securityDelayArr).toFixed(4), legendText:"Sicurezza" , label: "Sicurezza"},
-            {  y: ($scope.airportSelected.airportOtherInfoGraphs[0].lateAircraftDelayArr).toFixed(4), legendText:"Veivolo" , label: "Veivolo"}
+            {  y: ($scope.markers[$scope.markerClicked.iata].carrierDelayArr).toFixed(4), legendText:"Compagnie", label: "Compagnie" },
+            {  y: ($scope.markers[$scope.markerClicked.iata].weatherDelayArr).toFixed(4), legendText:"Meteo", label: "Meteo" },
+            {  y: ($scope.markers[$scope.markerClicked.iata].nasDelayArr).toFixed(4), legendText:"Aviazione nazionale", label: "Aviazione nazionale" },
+            {  y: ($scope.markers[$scope.markerClicked.iata].securityDelayArr).toFixed(4), legendText:"Sicurezza" , label: "Sicurezza"},
+            {  y: ($scope.markers[$scope.markerClicked.iata].lateAircraftDelayArr).toFixed(4), legendText:"Veivolo" , label: "Veivolo"}
             ]
         }
         ]
